@@ -18,7 +18,7 @@ services:
       context: ./backend
       dockerfile: Dockerfile.dev
     container_name: ia_backend
-    env_file: .env
+    env_file: .env.production
     environment:
       - PYTHONPATH=/app
       - DATABASE_URL=mysql+pymysql://${MYSQL_USER}:${MYSQL_PASSWORD}@mysql:3306/${MYSQL_DATABASE}
@@ -42,10 +42,10 @@ services:
       context: ./front-v2
       dockerfile: Dockerfile
       args:
-        - NEXT_PUBLIC_API_BASE_URL=${NEXT_PUBLIC_API_BASE_URL}
-        - NEXT_PUBLIC_RAG_SERVICE_URL=${NEXT_PUBLIC_RAG_SERVICE_URL}
+        - NEXT_PUBLIC_API_BASE_URL=/api/v1
+        - NEXT_PUBLIC_RAG_SERVICE_URL=/rag-api
     container_name: ia_frontend
-    env_file: .env
+    env_file: .env.production
     depends_on:
       - backend
 
@@ -54,7 +54,7 @@ services:
       context: ./rag-service
       dockerfile: Dockerfile.dev
     container_name: ia_rag_service
-    env_file: .env
+    env_file: .env.production
     environment:
       - REDIS_URL=redis://redis:6379
       - QDRANT_URL=http://qdrant:6333
@@ -67,7 +67,7 @@ services:
       context: ./backend
       dockerfile: Dockerfile.dev
     container_name: ia_celery_worker
-    env_file: .env
+    env_file: .env.production
     environment:
       - PYTHONPATH=/app
       - DATABASE_URL=mysql+pymysql://${MYSQL_USER}:${MYSQL_PASSWORD}@mysql:3306/${MYSQL_DATABASE}

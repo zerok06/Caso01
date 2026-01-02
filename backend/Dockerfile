@@ -21,4 +21,7 @@ COPY . .
 ENV PORT=8080
 EXPOSE 8080
 
+COPY worker_entrypoint.sh .
+RUN chmod +x worker_entrypoint.sh
+
 CMD ["sh", "-c", "uvicorn main:app --host 0.0.0.0 --port ${PORT}"]

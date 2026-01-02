@@ -98,7 +98,7 @@ export function ChatArea() {
       const file = rfpFile.originFileObj || rfpFile
       formData.append("file", file as File)
 
-      const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8000/api/v1"
+      const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "/api/v1"
       const response = await fetch(`${apiBaseUrl}/task/analyze`, {
         method: "POST",
         headers: {
@@ -131,7 +131,7 @@ export function ChatArea() {
 
     try {
       const token = localStorage.getItem('access_token')
-      const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8000/api/v1"
+      const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "/api/v1"
       const response = await fetch(`${apiBaseUrl}/task/generate?format=${format}`, {
         method: "POST",
         headers: {
@@ -228,7 +228,7 @@ export function ChatArea() {
           <img
             src="/logo.svg"
             alt="Logo"
-            style={{ 
+            style={{
               height: "40px",
               filter: "drop-shadow(0 0 10px rgba(227, 24, 55, 0.3))",
             }}
@@ -283,8 +283,8 @@ export function ChatArea() {
                 T
               </text>
             </svg>
-            <Sparkles 
-              size={16} 
+            <Sparkles
+              size={16}
               style={{
                 position: "absolute",
                 top: "-4px",
@@ -311,9 +311,9 @@ export function ChatArea() {
             >
               Hola, {user?.full_name || user?.email?.split('@')[0] || 'Usuario'}
             </Title>
-            <p style={{ 
-              color: "#999999", 
-              fontSize: "16px", 
+            <p style={{
+              color: "#999999",
+              fontSize: "16px",
               margin: "4px 0 0 0",
               fontWeight: 500,
             }}>
@@ -324,22 +324,22 @@ export function ChatArea() {
 
         {/* Dashboard Stats - Muestra métricas empresariales */}
         <div style={{ maxWidth: "1200px", width: "100%", marginBottom: "32px" }} className="animate-fade-in-up">
-          <DashboardStats 
+          <DashboardStats
             token={typeof window !== 'undefined' ? localStorage.getItem('access_token') || undefined : undefined}
             autoFetch={true}
           />
         </div>
 
         {/* Smart Assistant - Sugerencias proactivas */}
-        <div style={{ 
-          maxWidth: "1200px", 
+        <div style={{
+          maxWidth: "1200px",
           width: "100%",
           display: "grid",
           gridTemplateColumns: "2fr 1fr",
           gap: "20px",
           marginBottom: "32px",
         }} className="animate-fade-in-up">
-          <SmartAssistant 
+          <SmartAssistant
             workspaceName={activeWorkspace?.name || 'tus workspaces'}
             token={typeof window !== 'undefined' ? localStorage.getItem('access_token') || undefined : undefined}
             workspaceId={activeWorkspace?.id}
@@ -352,8 +352,8 @@ export function ChatArea() {
         </div>
 
         {/* Quick Actions Section */}
-        <div style={{ 
-          maxWidth: "1200px", 
+        <div style={{
+          maxWidth: "1200px",
           width: "100%",
           marginBottom: "32px",
         }} className="animate-fade-in-up">
@@ -391,16 +391,16 @@ export function ChatArea() {
         </div>
 
         {/* Diferenciador clave */}
-        <div 
-          style={{ 
+        <div
+          style={{
             maxWidth: "800px",
             width: "100%",
             marginBottom: "32px",
             textAlign: "center",
           }}
         >
-          <p style={{ 
-            fontSize: "14px", 
+          <p style={{
+            fontSize: "14px",
             color: "#666666",
             marginBottom: "12px",
           }}>
@@ -439,9 +439,9 @@ export function ChatArea() {
               border: "1px solid rgba(255, 255, 255, 0.1)",
             }}
           >
-            <div style={{ 
-              display: 'flex', 
-              alignItems: 'flex-start', 
+            <div style={{
+              display: 'flex',
+              alignItems: 'flex-start',
               gap: '8px',
               marginBottom: '12px',
             }}>
@@ -584,7 +584,7 @@ export function ChatArea() {
             >
               Análisis Rápido RFP
             </ModernButton>
-            
+
             <ModernButton
               onClick={() => router.push("/workspace")}
               variant="ghost"
@@ -944,10 +944,10 @@ export function ChatArea() {
                           <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-amber-500/10 border border-amber-500/30 text-amber-400 rounded-lg text-xs font-medium">
                             <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
                               <path d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" />
-      <AnalysisTemplates
-        open={showTemplates}
-        onClose={() => setShowTemplates(false)}
-      />
+                              <AnalysisTemplates
+                                open={showTemplates}
+                                onClose={() => setShowTemplates(false)}
+                              />
                             </svg>
                             {miembro.experiencia}
                           </span>
@@ -975,15 +975,15 @@ export function ChatArea() {
           </div>
         )}
       </Modal>
-      
+
       {/* Modales de UX mejorada */}
-      <ValuePropositionModal 
-        open={showValueProposition} 
-        onClose={() => setShowValueProposition(false)} 
+      <ValuePropositionModal
+        open={showValueProposition}
+        onClose={() => setShowValueProposition(false)}
       />
-      <OnboardingModal 
-        open={showOnboarding} 
-        onClose={() => setShowOnboarding(false)} 
+      <OnboardingModal
+        open={showOnboarding}
+        onClose={() => setShowOnboarding(false)}
       />
     </div>
   )

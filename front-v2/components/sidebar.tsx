@@ -115,7 +115,7 @@ export default function Sidebar() {
         return
       }
 
-      const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8000/api/v1"
+      const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "/api/v1"
       const response = await fetch(`${apiBaseUrl}/task/generate?format=${format}`, {
         method: "POST",
         headers: {
@@ -166,10 +166,10 @@ export default function Sidebar() {
       setNewChatTitle("");
       setNewChatFile(null);
     } else {
-       // Open modal even without workspace - will create general chat
-       setIsNewChatModalOpen(true); 
-       setNewChatTitle("");
-       setNewChatFile(null);
+      // Open modal even without workspace - will create general chat
+      setIsNewChatModalOpen(true);
+      setNewChatTitle("");
+      setNewChatFile(null);
     }
   }
 
@@ -238,7 +238,7 @@ export default function Sidebar() {
       const file = rfpFile.originFileObj || rfpFile
       formData.append("file", file as File)
 
-      const response = await fetch("http://localhost:8000/api/v1/task/analyze", {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL || '/api/v1'}/task/analyze`, {
         method: "POST",
         headers: {
           "Authorization": `Bearer ${token}`,
@@ -504,7 +504,10 @@ export default function Sidebar() {
             const pendingIds = new Set(uploadedIds);
 
             // Setup WebSocket to track document processing
-            const wsUrl = process.env.NEXT_PUBLIC_WS_URL || "ws://localhost:8000/api/v1/ws/notifications";
+            // Dynamic WebSocket URL
+            const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+            const host = window.location.host;
+            const wsUrl = process.env.NEXT_PUBLIC_WS_URL || `${protocol}//${host}/api/v1/ws/notifications`;
             const ws = new WebSocket(wsUrl);
 
             ws.onopen = () => {
@@ -727,7 +730,10 @@ export default function Sidebar() {
           setDocumentStatus("processing");
 
           // Setup WebSocket to track document processing
-          const wsUrl = process.env.NEXT_PUBLIC_WS_URL || "ws://localhost:8000/api/v1/ws/notifications";
+          // Dynamic WebSocket URL
+          const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+          const host = window.location.host;
+          const wsUrl = process.env.NEXT_PUBLIC_WS_URL || `${protocol}//${host}/api/v1/ws/notifications`;
           const ws = new WebSocket(wsUrl);
 
           ws.onopen = () => {
@@ -1244,8 +1250,8 @@ export default function Sidebar() {
                   if (window.innerWidth < 768) setMobileOpen(!mobileOpen)
                 }}
                 className="transition-smooth"
-                style={{ 
-                  color: "#E3E3E3", 
+                style={{
+                  color: "#E3E3E3",
                   padding: "8px",
                   borderRadius: "8px",
                   background: "rgba(255, 255, 255, 0.02)",
@@ -2197,7 +2203,7 @@ export default function Sidebar() {
                   <div className="flex items-center gap-2 mb-3">
                     <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center">
                       <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
-                        <path d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"/>
+                        <path d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" />
                       </svg>
                     </div>
                     <span className="text-zinc-300 text-sm font-semibold uppercase tracking-wider">
@@ -2214,16 +2220,16 @@ export default function Sidebar() {
                   <div className="flex items-center gap-2 mb-3 md:justify-end">
                     <div className="w-8 h-8 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-lg flex items-center justify-center">
                       <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
-                        <path d="M8.433 7.418c.155-.103.346-.196.567-.267v1.698a2.305 2.305 0 01-.567-.267C8.07 8.34 8 8.114 8 8c0-.114.07-.34.433-.582zM11 12.849v-1.698c.22.071.412.164.567.267.364.243.433.468.433.582 0 .114-.07.34-.433.582a2.305 2.305 0 01-.567.267z"/>
-                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-13a1 1 0 10-2 0v.092a4.535 4.535 0 00-1.676.662C6.602 6.234 6 7.009 6 8c0 .99.602 1.765 1.324 2.246.48.32 1.054.545 1.676.662v1.941c-.391-.127-.68-.317-.843-.504a1 1 0 10-1.51 1.31c.562.649 1.413 1.076 2.353 1.253V15a1 1 0 102 0v-.092a4.535 4.535 0 001.676-.662C13.398 13.766 14 12.991 14 12c0-.99-.602-1.765-1.324-2.246A4.535 4.535 0 0011 9.092V7.151c.391.127.68.317.843.504a1 1 0 101.511-1.31c-.563-.649-1.413-1.076-2.354-1.253V5z" clipRule="evenodd"/>
+                        <path d="M8.433 7.418c.155-.103.346-.196.567-.267v1.698a2.305 2.305 0 01-.567-.267C8.07 8.34 8 8.114 8 8c0-.114.07-.34.433-.582zM11 12.849v-1.698c.22.071.412.164.567.267.364.243.433.468.433.582 0 .114-.07.34-.433.582a2.305 2.305 0 01-.567.267z" />
+                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-13a1 1 0 10-2 0v.092a4.535 4.535 0 00-1.676.662C6.602 6.234 6 7.009 6 8c0 .99.602 1.765 1.324 2.246.48.32 1.054.545 1.676.662v1.941c-.391-.127-.68-.317-.843-.504a1 1 0 10-1.51 1.31c.562.649 1.413 1.076 2.353 1.253V15a1 1 0 102 0v-.092a4.535 4.535 0 001.676-.662C13.398 13.766 14 12.991 14 12c0-.99-.602-1.765-1.324-2.246A4.535 4.535 0 0011 9.092V7.151c.391.127.68.317.843.504a1 1 0 101.511-1.31c-.563-.649-1.413-1.076-2.354-1.253V5z" clipRule="evenodd" />
                       </svg>
                     </div>
                     <span className="text-zinc-300 text-sm font-semibold uppercase tracking-wider">
                       Presupuesto Total
                     </span>
                   </div>
-                  {analysisResult.alcance_economico?.presupuesto && 
-                   !analysisResult.alcance_economico.presupuesto.toLowerCase().includes('no especific') ? (
+                  {analysisResult.alcance_economico?.presupuesto &&
+                    !analysisResult.alcance_economico.presupuesto.toLowerCase().includes('no especific') ? (
                     <>
                       <div className="text-emerald-400 text-4xl font-bold font-mono">
                         {analysisResult.alcance_economico.moneda?.split('(')[0].trim() || ''} {analysisResult.alcance_economico.presupuesto}
@@ -2249,8 +2255,8 @@ export default function Sidebar() {
                 <div className="flex items-center gap-3 mb-5">
                   <div className="w-10 h-10 bg-gradient-to-br from-red-500 to-orange-500 rounded-xl flex items-center justify-center shadow-lg">
                     <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M6 6V5a3 3 0 013-3h2a3 3 0 013 3v1h2a2 2 0 012 2v3.57A22.952 22.952 0 0110 13a22.95 22.95 0 01-8-1.43V8a2 2 0 012-2h2zm2-1a1 1 0 011-1h2a1 1 0 011 1v1H8V5zm1 5a1 1 0 011-1h.01a1 1 0 110 2H10a1 1 0 01-1-1z" clipRule="evenodd"/>
-                      <path d="M2 13.692V16a2 2 0 002 2h12a2 2 0 002-2v-2.308A24.974 24.974 0 0110 15c-2.796 0-5.487-.46-8-1.308z"/>
+                      <path fillRule="evenodd" d="M6 6V5a3 3 0 013-3h2a3 3 0 013 3v1h2a2 2 0 012 2v3.57A22.952 22.952 0 0110 13a22.95 22.95 0 01-8-1.43V8a2 2 0 012-2h2zm2-1a1 1 0 011-1h2a1 1 0 011 1v1H8V5zm1 5a1 1 0 011-1h.01a1 1 0 110 2H10a1 1 0 01-1-1z" clipRule="evenodd" />
+                      <path d="M2 13.692V16a2 2 0 002 2h12a2 2 0 002-2v-2.308A24.974 24.974 0 0110 15c-2.796 0-5.487-.46-8-1.308z" />
                     </svg>
                   </div>
                   <h3 className="text-white text-lg font-bold">Objetivo del Proyecto</h3>
@@ -2319,7 +2325,7 @@ export default function Sidebar() {
                 <div className="flex items-center gap-3 mb-5">
                   <div className="w-10 h-10 bg-gradient-to-br from-amber-500 to-yellow-500 rounded-xl flex items-center justify-center shadow-lg">
                     <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clipRule="evenodd"/>
+                      <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clipRule="evenodd" />
                     </svg>
                   </div>
                   <h3 className="text-white text-lg font-bold">Preguntas Clave para el Cliente</h3>
@@ -2345,7 +2351,7 @@ export default function Sidebar() {
                 <div className="flex items-center gap-3 mb-6">
                   <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl flex items-center justify-center shadow-lg">
                     <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
-                      <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z"/>
+                      <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z" />
                     </svg>
                   </div>
                   <div className="flex-1">
@@ -2386,8 +2392,8 @@ export default function Sidebar() {
                           <div className="mb-4">
                             <div className="inline-flex items-center gap-2 px-3.5 py-2 bg-gradient-to-r from-amber-500/20 to-orange-500/20 border border-amber-500/40 rounded-lg shadow-sm">
                               <svg className="w-4 h-4 text-amber-400" fill="currentColor" viewBox="0 0 20 20">
-                                <path fillRule="evenodd" d="M6 6V5a3 3 0 013-3h2a3 3 0 013 3v1h2a2 2 0 012 2v3.57A22.952 22.952 0 0110 13a22.95 22.95 0 01-8-1.43V8a2 2 0 012-2h2zm2-1a1 1 0 011-1h2a1 1 0 011 1v1H8V5zm1 5a1 1 0 011-1h.01a1 1 0 110 2H10a1 1 0 01-1-1z" clipRule="evenodd"/>
-                                <path d="M2 13.692V16a2 2 0 002 2h12a2 2 0 002-2v-2.308A24.974 24.974 0 0110 15c-2.796 0-5.487-.46-8-1.308z"/>
+                                <path fillRule="evenodd" d="M6 6V5a3 3 0 013-3h2a3 3 0 013 3v1h2a2 2 0 012 2v3.57A22.952 22.952 0 0110 13a22.95 22.95 0 01-8-1.43V8a2 2 0 012-2h2zm2-1a1 1 0 011-1h2a1 1 0 011 1v1H8V5zm1 5a1 1 0 011-1h.01a1 1 0 110 2H10a1 1 0 01-1-1z" clipRule="evenodd" />
+                                <path d="M2 13.692V16a2 2 0 002 2h12a2 2 0 002-2v-2.308A24.974 24.974 0 0110 15c-2.796 0-5.487-.46-8-1.308z" />
                               </svg>
                               <div className="flex items-baseline gap-1">
                                 <span className="text-amber-300 font-bold text-base">
@@ -2400,7 +2406,7 @@ export default function Sidebar() {
                             </div>
                           </div>
                         )}
-                        
+
                         {/* Skills */}
                         {miembro.skills?.length > 0 && (
                           <div>
@@ -2552,11 +2558,11 @@ export default function Sidebar() {
       >
         {/* Header del Modal */}
         <div style={{ marginBottom: "28px" }}>
-          <div style={{ 
-            display: "flex", 
-            alignItems: "center", 
+          <div style={{
+            display: "flex",
+            alignItems: "center",
             gap: "12px",
-            marginBottom: "12px" 
+            marginBottom: "12px"
           }}>
             <div style={{
               width: "48px",
@@ -2583,16 +2589,16 @@ export default function Sidebar() {
 
         {/* Upload Area */}
         <div style={{ marginBottom: "24px" }}>
-          <Text style={{ 
-            color: "#CCCCCC", 
-            fontSize: "14px", 
-            display: "block", 
+          <Text style={{
+            color: "#CCCCCC",
+            fontSize: "14px",
+            display: "block",
             marginBottom: "12px",
             fontWeight: 600,
           }}>
             Selecciona tu documento RFP
           </Text>
-          
+
           <Upload
             beforeUpload={(file) => {
               const isValidType = [
@@ -2634,7 +2640,7 @@ export default function Sidebar() {
               transition: "all 0.3s ease",
               backdropFilter: "blur(10px)",
             }}
-            className="upload-hover"
+              className="upload-hover"
             >
               {!rfpFile ? (
                 <>
@@ -2651,17 +2657,17 @@ export default function Sidebar() {
                   }}>
                     <UploadOutlined style={{ fontSize: "28px", color: "#FFFFFF" }} />
                   </div>
-                  <Text style={{ 
-                    color: "#FFFFFF", 
-                    fontSize: "16px", 
+                  <Text style={{
+                    color: "#FFFFFF",
+                    fontSize: "16px",
                     fontWeight: 600,
                     marginBottom: "8px",
                     display: "block",
                   }}>
                     Arrastra tu archivo o haz click aquí
                   </Text>
-                  <Text style={{ 
-                    color: "#888888", 
+                  <Text style={{
+                    color: "#888888",
                     fontSize: "13px",
                     display: "block",
                   }}>
@@ -2692,8 +2698,8 @@ export default function Sidebar() {
                     <FileText size={20} style={{ color: "#FFFFFF" }} />
                   </div>
                   <div style={{ flex: 1, minWidth: 0 }}>
-                    <Text style={{ 
-                      color: "#FFFFFF", 
+                    <Text style={{
+                      color: "#FFFFFF",
                       fontSize: "14px",
                       fontWeight: 600,
                       display: "block",
@@ -2703,8 +2709,8 @@ export default function Sidebar() {
                     }}>
                       {rfpFile.name}
                     </Text>
-                    <Text style={{ 
-                      color: "#10B981", 
+                    <Text style={{
+                      color: "#10B981",
                       fontSize: "12px",
                       display: "block",
                     }}>
@@ -2733,9 +2739,9 @@ export default function Sidebar() {
         </div>
 
         {/* Footer Actions */}
-        <div style={{ 
-          display: "flex", 
-          gap: "12px", 
+        <div style={{
+          display: "flex",
+          gap: "12px",
           justifyContent: "flex-end",
         }}>
           <Button
@@ -2768,13 +2774,13 @@ export default function Sidebar() {
               padding: "0 28px",
               borderRadius: "8px",
               border: "none",
-              background: rfpFile 
+              background: rfpFile
                 ? "linear-gradient(135deg, #10B981 0%, #059669 100%)"
                 : "rgba(255, 255, 255, 0.1)",
               color: rfpFile ? "#FFFFFF" : "#666666",
               fontWeight: 600,
-              boxShadow: rfpFile 
-                ? "0 4px 12px rgba(16, 185, 129, 0.3)" 
+              boxShadow: rfpFile
+                ? "0 4px 12px rgba(16, 185, 129, 0.3)"
                 : "none",
               transition: "all 0.3s ease",
               display: "flex",

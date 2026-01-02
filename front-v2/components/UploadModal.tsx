@@ -58,7 +58,10 @@ export function UploadModal({
   useEffect(() => {
     if (!open || !workspaceId) return;
 
-    const wsUrl = process.env.NEXT_PUBLIC_WS_URL || "ws://localhost:8000/api/v1/ws/notifications";
+    // Dynamic WebSocket URL
+    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+    const host = window.location.host;
+    const wsUrl = process.env.NEXT_PUBLIC_WS_URL || `${protocol}//${host}/api/v1/ws/notifications`;
 
     console.log("🔌 UploadModal: Conectando WebSocket...", wsUrl);
     const ws = new WebSocket(wsUrl);

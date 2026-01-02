@@ -206,7 +206,7 @@ export const streamChatQuery = async ({
   onFinish: () => void;
 }) => {
   const baseURL =
-    process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8000/api/v1";
+    process.env.NEXT_PUBLIC_API_BASE_URL || "/api/v1";
 
   try {
     const token = localStorage.getItem("access_token");
@@ -754,7 +754,7 @@ export const useDocumentStatus = (documentId: string, enabled: boolean = true) =
     queryKey: ["document-status", documentId],
     queryFn: async () => {
       const result = await getDocumentStatus(documentId);
-      
+
       // Track status changes for backoff reset
       if (result.status !== lastStatusRef.current) {
         // Reset attempt count on status change (e.g., PENDING → PROCESSING)
@@ -763,29 +763,29 @@ export const useDocumentStatus = (documentId: string, enabled: boolean = true) =
         }
         lastStatusRef.current = result.status as DocumentStatus;
       }
-      
+
       return result;
     },
     enabled: !!documentId && enabled,
     refetchInterval: (query) => {
       const data = query.state.data as DocumentPublic | undefined;
-      
+
       // Stop polling if terminal state reached
       if (data?.status === "COMPLETED" || data?.status === "FAILED") {
         attemptCountRef.current = 0;
         return false;
       }
-      
+
       // Stop polling after max retries
       if (attemptCountRef.current >= POLLING_CONFIG.MAX_RETRIES) {
         console.warn(`Document ${documentId}: Max polling attempts reached`);
         return false;
       }
-      
+
       // Calculate next interval with exponential backoff
       const nextInterval = calculateBackoffInterval(attemptCountRef.current);
       attemptCountRef.current++;
-      
+
       return nextInterval;
     },
     retry: 3, // Retry failed requests up to 3 times
@@ -812,22 +812,22 @@ export const usePendingDocuments = (workspaceId: string, enabled: boolean = true
     enabled: !!workspaceId && enabled,
     refetchInterval: (query) => {
       const data = query.state.data as DocumentPublic[] | undefined;
-      
+
       // Stop polling if no pending documents
       if (!data || data.length === 0) {
         attemptCountRef.current = 0;
         return false;
       }
-      
+
       // Stop after max retries
       if (attemptCountRef.current >= POLLING_CONFIG.MAX_RETRIES) {
         return false;
       }
-      
+
       // Use slower backoff for batch polling (starts at 5 seconds)
       const nextInterval = calculateBackoffInterval(attemptCountRef.current) + 3000;
       attemptCountRef.current++;
-      
+
       return nextInterval;
     },
     retry: 2,

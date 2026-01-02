@@ -44,11 +44,14 @@ export function useNotificationsWS({
 
         try {
             // Derive WS URL from API Base URL or default
-            const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8000/api/v1";
-            
+            // Dynamic WebSocket URL
+            const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+            const host = window.location.host;
+            const apiBaseUrl = process.env.NEXT_PUBLIC_WS_URL || `${protocol}//${host}/api/v1/ws/notifications`;
+
             // Replace http/https with ws/wss
             let wsUrl = apiBaseUrl.replace(/^http/, 'ws');
-            
+
             // Ensure proper path formatting
             if (!wsUrl.endsWith('/')) wsUrl += '/';
             wsUrl += 'ws/notifications';

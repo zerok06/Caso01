@@ -34,7 +34,7 @@ export default function RegisterPage() {
 
   const handleRegister = async (e: FormEvent) => {
     e.preventDefault();
-    
+
     // Validaciones
     if (!formData.email || !formData.password || !formData.full_name) {
       showToast("Por favor, completa todos los campos", "error");
@@ -54,7 +54,7 @@ export default function RegisterPage() {
     setIsLoading(true);
 
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000/api/v1';
+      const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL || '/api/v1';
       const response = await fetch(`${apiUrl}/auth/register`, {
         method: 'POST',
         headers: {
@@ -73,7 +73,7 @@ export default function RegisterPage() {
       }
 
       showToast("¡Cuenta creada exitosamente! Redirigiendo al login...", "success");
-      
+
       // Redirigir al login
       setTimeout(() => {
         router.push('/login');
@@ -88,7 +88,7 @@ export default function RegisterPage() {
   };
 
   return (
-    <div 
+    <div
       className="bg-gradient-animated"
       style={{
         minHeight: '100vh',
@@ -105,7 +105,7 @@ export default function RegisterPage() {
       <div style={{ position: 'absolute', top: '20%', right: '15%', width: '3px', height: '3px', animationDelay: '2s' }} className="particle" />
       <div style={{ position: 'absolute', bottom: '30%', left: '20%', width: '5px', height: '5px', animationDelay: '4s' }} className="particle" />
       <div style={{ position: 'absolute', bottom: '15%', right: '10%', width: '3px', height: '3px', animationDelay: '6s' }} className="particle" />
-      
+
       {/* Gradiente radial de acento */}
       <div className="bg-radial-glow" style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }} />
 
@@ -140,7 +140,7 @@ export default function RegisterPage() {
 
         {/* Logo y título */}
         <div style={{ textAlign: 'center', marginBottom: dt.spacing.xl }} className="animate-fade-in-up">
-          <div 
+          <div
             style={{
               display: 'inline-flex',
               alignItems: 'center',
@@ -156,9 +156,9 @@ export default function RegisterPage() {
             className="hover-lift"
           >
             <UserAddOutlined style={{ fontSize: '40px', color: '#FFFFFF' }} />
-            <div style={{ 
-              position: 'absolute', 
-              inset: '-2px', 
+            <div style={{
+              position: 'absolute',
+              inset: '-2px',
               background: 'linear-gradient(135deg, #10B981, #059669)',
               borderRadius: '20px',
               opacity: 0.3,
@@ -166,11 +166,11 @@ export default function RegisterPage() {
               zIndex: -1,
             }} />
           </div>
-          
-          <Title 
-            level={1} 
+
+          <Title
+            level={1}
             className="text-gradient-animated"
-            style={{ 
+            style={{
               margin: `0 0 ${dt.spacing.sm} 0`,
               fontSize: '36px',
               fontWeight: 800,
@@ -179,21 +179,21 @@ export default function RegisterPage() {
           >
             Crear Cuenta
           </Title>
-          
+
           <Text style={{ color: dt.colors.dark.textSubtle, fontSize: '16px', display: 'block', marginBottom: dt.spacing.md }}>
             Únete a la plataforma de análisis de RFPs
           </Text>
 
           {/* Características destacadas */}
-          <div style={{ 
-            display: 'flex', 
-            gap: dt.spacing.md, 
+          <div style={{
+            display: 'flex',
+            gap: dt.spacing.md,
             justifyContent: 'center',
             marginTop: dt.spacing.lg,
           }}>
-            <div style={{ 
-              display: 'flex', 
-              alignItems: 'center', 
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
               gap: '6px',
               padding: '8px 16px',
               background: 'rgba(16, 185, 129, 0.1)',
@@ -203,9 +203,9 @@ export default function RegisterPage() {
               <ThunderboltOutlined style={{ color: '#10B981' }} />
               <Text style={{ color: dt.colors.dark.textSubtle, fontSize: '12px' }}>Gratis</Text>
             </div>
-            <div style={{ 
-              display: 'flex', 
-              alignItems: 'center', 
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
               gap: '6px',
               padding: '8px 16px',
               background: 'rgba(59, 130, 246, 0.1)',
@@ -219,7 +219,7 @@ export default function RegisterPage() {
         </div>
 
         {/* Formulario de registro con glassmorphism */}
-        <div 
+        <div
           className="glass-card hover-lift"
           style={{
             padding: '40px',
@@ -229,9 +229,9 @@ export default function RegisterPage() {
           <form onSubmit={handleRegister} style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
             {/* Nombre completo */}
             <div className="transition-smooth">
-              <Text style={{ 
-                color: dt.colors.dark.text, 
-                display: 'block', 
+              <Text style={{
+                color: dt.colors.dark.text,
+                display: 'block',
                 marginBottom: dt.spacing.sm,
                 fontSize: '14px',
                 fontWeight: 600,
@@ -260,9 +260,9 @@ export default function RegisterPage() {
 
             {/* Email */}
             <div className="transition-smooth">
-              <Text style={{ 
-                color: dt.colors.dark.text, 
-                display: 'block', 
+              <Text style={{
+                color: dt.colors.dark.text,
+                display: 'block',
                 marginBottom: dt.spacing.sm,
                 fontSize: '14px',
                 fontWeight: 600,
@@ -291,9 +291,9 @@ export default function RegisterPage() {
 
             {/* Password */}
             <div className="transition-smooth">
-              <Text style={{ 
-                color: dt.colors.dark.text, 
-                display: 'block', 
+              <Text style={{
+                color: dt.colors.dark.text,
+                display: 'block',
                 marginBottom: dt.spacing.sm,
                 fontSize: '14px',
                 fontWeight: 600,
@@ -310,11 +310,11 @@ export default function RegisterPage() {
                 minLength={8}
                 className="input-enhanced transition-smooth"
                 suffix={
-                  <span 
+                  <span
                     onClick={() => setShowPassword(!showPassword)}
                     className="transition-smooth"
-                    style={{ 
-                      cursor: 'pointer', 
+                    style={{
+                      cursor: 'pointer',
                       color: dt.colors.dark.textSubtle,
                     }}
                     onMouseEnter={(e) => e.currentTarget.style.color = '#10B981'}
@@ -337,9 +337,9 @@ export default function RegisterPage() {
 
             {/* Confirmar Password */}
             <div className="transition-smooth">
-              <Text style={{ 
-                color: dt.colors.dark.text, 
-                display: 'block', 
+              <Text style={{
+                color: dt.colors.dark.text,
+                display: 'block',
                 marginBottom: dt.spacing.sm,
                 fontSize: '14px',
                 fontWeight: 600,
@@ -355,11 +355,11 @@ export default function RegisterPage() {
                 required
                 className="input-enhanced transition-smooth"
                 suffix={
-                  <span 
+                  <span
                     onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                     className="transition-smooth"
-                    style={{ 
-                      cursor: 'pointer', 
+                    style={{
+                      cursor: 'pointer',
                       color: dt.colors.dark.textSubtle,
                     }}
                     onMouseEnter={(e) => e.currentTarget.style.color = '#10B981'}
@@ -413,11 +413,11 @@ export default function RegisterPage() {
           </form>
 
           {/* Divider */}
-          <div style={{ 
-            display: 'flex', 
-            alignItems: 'center', 
-            gap: '16px', 
-            margin: '32px 0 24px 0' 
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '16px',
+            margin: '32px 0 24px 0'
           }}>
             <div style={{ flex: 1, height: '1px', background: 'rgba(255, 255, 255, 0.1)' }} />
             <Text style={{ color: dt.colors.dark.textSubtle, fontSize: '12px' }}>o</Text>
@@ -431,8 +431,8 @@ export default function RegisterPage() {
               <span
                 onClick={() => router.push('/login')}
                 className="transition-smooth"
-                style={{ 
-                  color: '#3B82F6', 
+                style={{
+                  color: '#3B82F6',
                   cursor: 'pointer',
                   fontWeight: 600,
                 }}
@@ -453,8 +453,8 @@ export default function RegisterPage() {
 
         {/* Footer mejorado */}
         <div style={{ marginTop: '32px', textAlign: 'center' }} className="animate-fade-in-up">
-          <Text style={{ 
-            color: '#6B7280', 
+          <Text style={{
+            color: '#6B7280',
             fontSize: '13px',
             display: 'block',
             marginBottom: '12px',

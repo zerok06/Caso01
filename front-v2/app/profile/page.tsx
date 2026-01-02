@@ -60,7 +60,7 @@ export default function ProfilePage() {
 
     setIsSaving(true);
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000/api/v1';
+      const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL || '/api/v1';
       const token = localStorage.getItem('access_token');
 
       const response = await fetch(`${apiUrl}/auth/me`, {
@@ -105,7 +105,7 @@ export default function ProfilePage() {
 
     setIsSaving(true);
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000/api/v1';
+      const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL || '/api/v1';
       const token = localStorage.getItem('access_token');
 
       const response = await fetch(`${apiUrl}/auth/change-password`, {
@@ -154,7 +154,7 @@ export default function ProfilePage() {
 
     setIsUploadingPhoto(true);
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000/api/v1';
+      const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL || '/api/v1';
       const token = localStorage.getItem('access_token');
 
       const formData = new FormData();
@@ -271,7 +271,7 @@ export default function ProfilePage() {
               <Avatar
                 size={120}
                 icon={!user?.profile_picture ? <UserOutlined /> : undefined}
-                src={user?.profile_picture ? `${process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000'}${user.profile_picture}` : undefined}
+                src={user?.profile_picture ? `${user.profile_picture.startsWith('http') ? '' : (process.env.NEXT_PUBLIC_API_BASE_URL || '/api/v1').replace('/api/v1', '')}${user.profile_picture}` : undefined}
                 style={{
                   background: user?.profile_picture ? 'transparent' : 'linear-gradient(135deg, #E31837 0%, #FF6B00 100%)',
                   fontSize: '48px',

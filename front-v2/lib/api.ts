@@ -437,9 +437,12 @@ export const createConversationApi = async (
  * GET /api/v1/workspaces/{workspace_id}/conversations/{conversation_id}
  */
 export const fetchConversationMessages = async (
-  workspaceId: string,
+  workspaceId: string | null,
   conversationId: string,
 ): Promise<ConversationWithMessages> => {
+  if (!workspaceId) {
+    return fetchGeneralConversationMessages(conversationId);
+  }
   const { data } = await api.get<ConversationWithMessages>(
     `/workspaces/${workspaceId}/conversations/${conversationId}`,
   );

@@ -1,0 +1,19 @@
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  output: "standalone", 
+  
+  // typescript: {
+  //   ignoreBuildErrors: true,  // ⚠️ Deshabilitado para detectar errores en build
+  // },
+  images: {
+    unoptimized: false,
+  },
+  
+  // Optimización de bundle - tree-shaking para Ant Design e íconos
+  transpilePackages: ['antd', '@ant-design/icons'],
+  experimental: {
+    optimizePackageImports: ['antd', '@ant-design/icons', 'lucide-react'],
+  },
+}
+
+export default nextConfig

@@ -3,10 +3,10 @@
 import React, { useState, useEffect } from 'react'
 import { Modal, Steps } from 'antd'
 import { ModernButton } from './ModernButton'
-import { 
-  FileText, 
-  Folder, 
-  MessageSquare, 
+import {
+  FileText,
+  Folder,
+  MessageSquare,
   Download,
   Zap,
   CheckCircle,
@@ -95,9 +95,6 @@ export function OnboardingModal({ open, onClose }: OnboardingModalProps) {
         body: {
           padding: '40px',
           background: '#0A0A0B',
-        },
-        content: {
-          background: '#0A0A0B',
           border: '1px solid rgba(227, 24, 55, 0.2)',
         },
       }}
@@ -119,29 +116,29 @@ export function OnboardingModal({ open, onClose }: OnboardingModalProps) {
         >
           {currentStepData.icon}
         </div>
-        
-        <h2 style={{ 
-          fontSize: '28px', 
-          fontWeight: 700, 
+
+        <h2 style={{
+          fontSize: '28px',
+          fontWeight: 700,
           color: '#FFFFFF',
           marginBottom: '12px',
         }}>
           {currentStepData.title}
         </h2>
-        
-        <p style={{ 
-          fontSize: '16px', 
-          color: '#CCCCCC', 
-          maxWidth: '500px', 
+
+        <p style={{
+          fontSize: '16px',
+          color: '#CCCCCC',
+          maxWidth: '500px',
           margin: '0 auto 24px',
         }}>
           {currentStepData.description}
         </p>
 
         {/* Steps Progress */}
-        <div style={{ 
-          display: 'flex', 
-          justifyContent: 'center', 
+        <div style={{
+          display: 'flex',
+          justifyContent: 'center',
           gap: '8px',
           marginBottom: '32px',
         }}>
@@ -152,7 +149,7 @@ export function OnboardingModal({ open, onClose }: OnboardingModalProps) {
                 width: index === currentStep ? '40px' : '12px',
                 height: '6px',
                 borderRadius: '3px',
-                background: index === currentStep 
+                background: index === currentStep
                   ? 'linear-gradient(90deg, #E31837, #FF6B00)'
                   : 'rgba(255, 255, 255, 0.2)',
                 transition: 'all 0.3s ease',
@@ -170,9 +167,9 @@ export function OnboardingModal({ open, onClose }: OnboardingModalProps) {
         padding: '24px',
         marginBottom: '32px',
       }}>
-        <h3 style={{ 
-          fontSize: '16px', 
-          fontWeight: 600, 
+        <h3 style={{
+          fontSize: '16px',
+          fontWeight: 600,
           color: '#E31837',
           marginBottom: '16px',
           display: 'flex',
@@ -182,25 +179,25 @@ export function OnboardingModal({ open, onClose }: OnboardingModalProps) {
           <Zap size={20} />
           Tips Importantes
         </h3>
-        <ul style={{ 
-          listStyle: 'none', 
-          padding: 0, 
+        <ul style={{
+          listStyle: 'none',
+          padding: 0,
           margin: 0,
           color: '#CCCCCC',
           fontSize: '14px',
         }}>
           {currentStepData.tips.map((tip, index) => (
-            <li 
+            <li
               key={index}
-              style={{ 
+              style={{
                 marginBottom: '12px',
                 paddingLeft: '28px',
                 position: 'relative',
               }}
             >
-              <CheckCircle 
-                size={16} 
-                style={{ 
+              <CheckCircle
+                size={16}
+                style={{
                   position: 'absolute',
                   left: 0,
                   top: '2px',
@@ -214,8 +211,8 @@ export function OnboardingModal({ open, onClose }: OnboardingModalProps) {
       </div>
 
       {/* Navigation */}
-      <div style={{ 
-        display: 'flex', 
+      <div style={{
+        display: 'flex',
         justifyContent: 'space-between',
         gap: '12px',
       }}>
@@ -227,7 +224,7 @@ export function OnboardingModal({ open, onClose }: OnboardingModalProps) {
         >
           Anterior
         </ModernButton>
-        
+
         <ModernButton
           variant={currentStep === steps.length - 1 ? 'gradient' : 'primary'}
           glow={currentStep === steps.length - 1}

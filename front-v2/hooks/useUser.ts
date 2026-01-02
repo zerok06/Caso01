@@ -7,6 +7,7 @@ export interface UserData {
   email: string
   full_name?: string | null
   created_at?: string
+  profile_picture?: string | null
 }
 
 /**
@@ -22,20 +23,21 @@ export function useUser() {
     const fetchUser = async () => {
       setIsLoading(true)
       setError(null)
-      
+
       try {
         const userData = await checkAuthMe()
         setUser({
           email: userData.email,
           full_name: userData.full_name ?? undefined,
           created_at: userData.created_at,
+          profile_picture: userData.profile_picture,
         })
         // También guardar en localStorage para uso offline
         localStorage.setItem("user_data", JSON.stringify(userData))
       } catch (err) {
         console.error("Error fetching user:", err)
         setError(err instanceof Error ? err : new Error("Error desconocido"))
-        
+
         // Fallback: intentar obtener del localStorage
         const storedUser = localStorage.getItem("user_data")
         if (storedUser) {

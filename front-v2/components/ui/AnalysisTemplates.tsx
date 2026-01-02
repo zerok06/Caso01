@@ -3,12 +3,12 @@
 import React, { useState } from 'react'
 import { Modal, Tabs, Tag } from 'antd'
 import { ModernButton } from './ModernButton'
-import { 
-  FileTextOutlined, 
-  TeamOutlined, 
+import {
+  FileTextOutlined,
+  TeamOutlined,
   CalendarOutlined,
   CheckCircleOutlined,
-  RocketOutlined 
+  RocketOutlined
 } from '@ant-design/icons'
 
 interface TemplateOption {
@@ -140,17 +140,14 @@ export function AnalysisTemplates({ open, onClose, onSelect }: AnalysisTemplates
         body: {
           padding: '40px',
           background: '#0A0A0B',
-        },
-        content: {
-          background: '#0A0A0B',
           border: '1px solid rgba(227, 24, 55, 0.2)',
         },
       }}
     >
       <div style={{ textAlign: 'center', marginBottom: '32px' }}>
-        <h2 style={{ 
-          fontSize: '28px', 
-          fontWeight: 700, 
+        <h2 style={{
+          fontSize: '28px',
+          fontWeight: 700,
           color: '#FFFFFF',
           marginBottom: '12px',
         }}>
@@ -161,9 +158,9 @@ export function AnalysisTemplates({ open, onClose, onSelect }: AnalysisTemplates
         </p>
       </div>
 
-      <div style={{ 
-        display: 'grid', 
-        gridTemplateColumns: 'repeat(2, 1fr)', 
+      <div style={{
+        display: 'grid',
+        gridTemplateColumns: 'repeat(2, 1fr)',
         gap: '20px',
         marginBottom: '32px',
       }}>
@@ -172,8 +169,8 @@ export function AnalysisTemplates({ open, onClose, onSelect }: AnalysisTemplates
             key={template.id}
             onClick={() => handleSelect(template)}
             style={{
-              background: selectedTemplate === template.id 
-                ? 'rgba(227, 24, 55, 0.1)' 
+              background: selectedTemplate === template.id
+                ? 'rgba(227, 24, 55, 0.1)'
                 : 'rgba(26, 26, 28, 0.6)',
               backdropFilter: 'blur(20px)',
               border: selectedTemplate === template.id
@@ -243,8 +240,8 @@ export function AnalysisTemplates({ open, onClose, onSelect }: AnalysisTemplates
               }}>
                 {template.name}
               </h3>
-              <Tag 
-                style={{ 
+              <Tag
+                style={{
                   fontSize: '11px',
                   padding: '2px 8px',
                   borderRadius: '4px',
@@ -275,8 +272,8 @@ export function AnalysisTemplates({ open, onClose, onSelect }: AnalysisTemplates
               <strong style={{ color: '#FFFFFF', display: 'block', marginBottom: '8px' }}>
                 Incluye:
               </strong>
-              <ul style={{ 
-                margin: 0, 
+              <ul style={{
+                margin: 0,
                 paddingLeft: '20px',
                 lineHeight: 1.8,
               }}>
@@ -295,8 +292,8 @@ export function AnalysisTemplates({ open, onClose, onSelect }: AnalysisTemplates
       </div>
 
       {/* Actions */}
-      <div style={{ 
-        display: 'flex', 
+      <div style={{
+        display: 'flex',
         justifyContent: 'flex-end',
         gap: '12px',
       }}>

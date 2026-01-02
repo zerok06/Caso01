@@ -4,17 +4,17 @@ import React from 'react'
 import { Button } from 'antd'
 import type { ButtonProps } from 'antd'
 
-interface ModernButtonProps extends ButtonProps {
+type ModernButtonProps = Omit<ButtonProps, 'variant'> & {
   variant?: 'primary' | 'secondary' | 'ghost' | 'gradient' | 'outline'
   glow?: boolean
 }
 
-export function ModernButton({ 
-  variant = 'primary', 
-  glow = false, 
-  children, 
+export function ModernButton({
+  variant = 'primary',
+  glow = false,
+  children,
   className = '',
-  ...props 
+  ...props
 }: ModernButtonProps) {
   const getVariantStyles = (): React.CSSProperties => {
     const baseStyle: React.CSSProperties = {
@@ -84,8 +84,8 @@ export function ModernButton({
     const button = e.currentTarget
     button.style.transform = 'translateY(0)'
     if (variant === 'primary' || variant === 'gradient') {
-      button.style.boxShadow = glow 
-        ? '0 4px 20px rgba(227, 24, 55, 0.4)' 
+      button.style.boxShadow = glow
+        ? '0 4px 20px rgba(227, 24, 55, 0.4)'
         : '0 2px 8px rgba(0, 0, 0, 0.15)'
     } else if (variant === 'ghost') {
       button.style.borderColor = 'rgba(255, 255, 255, 0.1)'

@@ -23,8 +23,8 @@ interface Suggestion {
   title: string;
   description: string;
   action: string;
-  workspace_id: string;
-  workspace_name: string;
+  workspace_id?: string;
+  workspace_name?: string;
 }
 
 interface ComplianceDetail {
@@ -90,7 +90,7 @@ export class DashboardService {
    * Obtiene sugerencias proactivas del asistente inteligente
    */
   static async getSuggestions(token: string, workspaceId?: string): Promise<Suggestion[]> {
-    const url = workspaceId 
+    const url = workspaceId
       ? `${API_BASE_URL}/suggestions?workspace_id=${workspaceId}`
       : `${API_BASE_URL}/suggestions`;
 
@@ -151,7 +151,7 @@ export class DashboardService {
    * Lista todas las plantillas de análisis disponibles
    */
   static async getTemplates(token: string, category?: string): Promise<AnalysisTemplate[]> {
-    const url = category 
+    const url = category
       ? `${API_BASE_URL}/templates?category=${category}`
       : `${API_BASE_URL}/templates`;
 
@@ -193,8 +193,8 @@ export class DashboardService {
    * Aplica una plantilla a un workspace
    */
   static async applyTemplate(
-    token: string, 
-    workspaceId: string, 
+    token: string,
+    workspaceId: string,
     templateId: string
   ): Promise<{
     message: string;
@@ -204,7 +204,7 @@ export class DashboardService {
     applied_at: string;
   }> {
     const response = await fetch(
-      `${API_BASE_URL}/workspaces/${workspaceId}/apply-template?template_id=${templateId}`, 
+      `${API_BASE_URL}/workspaces/${workspaceId}/apply-template?template_id=${templateId}`,
       {
         method: 'POST',
         headers: {

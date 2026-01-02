@@ -2,9 +2,9 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Button, Input, Typography, Avatar, Spin, Modal, Upload, message as antMessage } from "antd";
-import { 
-  UserOutlined, 
-  MailOutlined, 
+import {
+  UserOutlined,
+  MailOutlined,
   LockOutlined,
   EditOutlined,
   SaveOutlined,
@@ -184,10 +184,10 @@ export default function ProfilePage() {
 
   if (userLoading) {
     return (
-      <div style={{ 
-        minHeight: '100vh', 
-        display: 'flex', 
-        alignItems: 'center', 
+      <div style={{
+        minHeight: '100vh',
+        display: 'flex',
+        alignItems: 'center',
         justifyContent: 'center',
         background: 'linear-gradient(135deg, #0a0a0a 0%, #1a1a1c 100%)',
       }}>
@@ -197,7 +197,7 @@ export default function ProfilePage() {
   }
 
   return (
-    <div 
+    <div
       className="bg-gradient-animated"
       style={{
         minHeight: '100vh',
@@ -207,7 +207,7 @@ export default function ProfilePage() {
       }}
     >
       <FloatingParticles />
-      
+
       {/* Gradiente radial */}
       <div className="bg-radial-glow" style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }} />
 
@@ -248,7 +248,7 @@ export default function ProfilePage() {
           gap: dt.spacing.xl,
         }}>
           {/* Tarjeta de perfil */}
-          <div 
+          <div
             className="glass-card"
             style={{
               padding: '40px',
@@ -268,7 +268,7 @@ export default function ProfilePage() {
                   if (file) handleUploadPhoto(file);
                 }}
               />
-              <Avatar 
+              <Avatar
                 size={120}
                 icon={!user?.profile_picture ? <UserOutlined /> : undefined}
                 src={user?.profile_picture ? `${process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000'}${user.profile_picture}` : undefined}
@@ -279,14 +279,14 @@ export default function ProfilePage() {
                 }}
                 onClick={() => document.getElementById('profile-picture-input')?.click()}
               />
-              <div 
+              <div
                 style={{
                   position: 'absolute',
                   bottom: 0,
                   right: 0,
                   width: '40px',
                   height: '40px',
-                  background: isUploadingPhoto 
+                  background: isUploadingPhoto
                     ? 'linear-gradient(135deg, #6B7280 0%, #4B5563 100%)'
                     : 'linear-gradient(135deg, #10B981 0%, #059669 100%)',
                   borderRadius: '50%',
@@ -330,7 +330,7 @@ export default function ProfilePage() {
                 style={{
                   width: '100%',
                   height: '48px',
-                  background: isEditing 
+                  background: isEditing
                     ? 'linear-gradient(135deg, #10B981 0%, #059669 100%)'
                     : 'linear-gradient(135deg, #E31837 0%, #C41530 100%)',
                   border: 'none',
@@ -400,7 +400,7 @@ export default function ProfilePage() {
           {/* Información del perfil */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: dt.spacing.xl }}>
             {/* Formulario */}
-            <div 
+            <div
               className="glass-card"
               style={{
                 padding: '40px',
@@ -414,9 +414,9 @@ export default function ProfilePage() {
               <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
                 {/* Nombre */}
                 <div>
-                  <Text style={{ 
-                    color: dt.colors.dark.text, 
-                    display: 'block', 
+                  <Text style={{
+                    color: dt.colors.dark.text,
+                    display: 'block',
                     marginBottom: dt.spacing.sm,
                     fontSize: '14px',
                     fontWeight: 600,
@@ -442,9 +442,9 @@ export default function ProfilePage() {
 
                 {/* Email */}
                 <div>
-                  <Text style={{ 
-                    color: dt.colors.dark.text, 
-                    display: 'block', 
+                  <Text style={{
+                    color: dt.colors.dark.text,
+                    display: 'block',
                     marginBottom: dt.spacing.sm,
                     fontSize: '14px',
                     fontWeight: 600,
@@ -470,9 +470,9 @@ export default function ProfilePage() {
 
                 {/* Fecha de registro */}
                 <div>
-                  <Text style={{ 
-                    color: dt.colors.dark.text, 
-                    display: 'block', 
+                  <Text style={{
+                    color: dt.colors.dark.text,
+                    display: 'block',
                     marginBottom: dt.spacing.sm,
                     fontSize: '14px',
                     fontWeight: 600,
@@ -501,7 +501,7 @@ export default function ProfilePage() {
             </div>
 
             {/* Estadísticas rápidas */}
-            <div 
+            <div
               className="glass-card"
               style={{
                 padding: '40px',
@@ -588,7 +588,7 @@ export default function ProfilePage() {
         onCancel={() => setShowPasswordModal(false)}
         footer={null}
         styles={{
-          content: {
+          body: {
             background: 'rgba(26, 26, 28, 0.95)',
             backdropFilter: 'blur(20px)',
             border: '1px solid rgba(255, 255, 255, 0.1)',

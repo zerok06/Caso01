@@ -23,9 +23,6 @@ export function ValuePropositionModal({ open, onClose }: ValuePropositionModalPr
         body: {
           padding: '40px',
           background: '#0A0A0B',
-        },
-        content: {
-          background: '#0A0A0B',
           border: '1px solid rgba(227, 24, 55, 0.2)',
         },
       }}
@@ -46,9 +43,9 @@ export function ValuePropositionModal({ open, onClose }: ValuePropositionModalPr
         >
           <RocketOutlined style={{ fontSize: '36px', color: '#FFFFFF' }} />
         </div>
-        <h2 style={{ 
-          fontSize: '28px', 
-          fontWeight: 700, 
+        <h2 style={{
+          fontSize: '28px',
+          fontWeight: 700,
           color: '#FFFFFF',
           marginBottom: '12px',
         }}>
@@ -59,17 +56,17 @@ export function ValuePropositionModal({ open, onClose }: ValuePropositionModalPr
         </p>
       </div>
 
-      <div style={{ 
-        display: 'grid', 
-        gridTemplateColumns: 'repeat(2, 1fr)', 
+      <div style={{
+        display: 'grid',
+        gridTemplateColumns: 'repeat(2, 1fr)',
         gap: '24px',
         marginBottom: '32px',
       }}>
         {/* ChatGPT Column */}
         <div>
-          <h3 style={{ 
-            fontSize: '18px', 
-            fontWeight: 600, 
+          <h3 style={{
+            fontSize: '18px',
+            fontWeight: 600,
             color: '#CCCCCC',
             marginBottom: '16px',
             textAlign: 'center',
@@ -83,9 +80,9 @@ export function ValuePropositionModal({ open, onClose }: ValuePropositionModalPr
             borderRadius: '12px',
             padding: '20px',
           }}>
-            <ul style={{ 
-              listStyle: 'none', 
-              padding: 0, 
+            <ul style={{
+              listStyle: 'none',
+              padding: 0,
               margin: 0,
               color: '#999999',
               fontSize: '14px',
@@ -105,9 +102,9 @@ export function ValuePropositionModal({ open, onClose }: ValuePropositionModalPr
 
         {/* TIVIT AI Column */}
         <div>
-          <h3 style={{ 
-            fontSize: '18px', 
-            fontWeight: 600, 
+          <h3 style={{
+            fontSize: '18px',
+            fontWeight: 600,
             color: '#FFFFFF',
             marginBottom: '16px',
             textAlign: 'center',
@@ -121,9 +118,9 @@ export function ValuePropositionModal({ open, onClose }: ValuePropositionModalPr
             borderRadius: '12px',
             padding: '20px',
           }}>
-            <ul style={{ 
-              listStyle: 'none', 
-              padding: 0, 
+            <ul style={{
+              listStyle: 'none',
+              padding: 0,
               margin: 0,
               color: '#FFFFFF',
               fontSize: '14px',
@@ -144,25 +141,25 @@ export function ValuePropositionModal({ open, onClose }: ValuePropositionModalPr
       </div>
 
       {/* Capacidades Especiales */}
-      <div style={{ 
+      <div style={{
         background: 'rgba(227, 24, 55, 0.05)',
         border: '1px solid rgba(227, 24, 55, 0.2)',
         borderRadius: '12px',
         padding: '24px',
         marginBottom: '24px',
       }}>
-        <h3 style={{ 
-          fontSize: '18px', 
-          fontWeight: 600, 
+        <h3 style={{
+          fontSize: '18px',
+          fontWeight: 600,
           color: '#E31837',
           marginBottom: '20px',
           textAlign: 'center',
         }}>
           🚀 Capacidades Empresariales Exclusivas
         </h3>
-        <div style={{ 
-          display: 'grid', 
-          gridTemplateColumns: 'repeat(3, 1fr)', 
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(3, 1fr)',
           gap: '20px',
         }}>
           <CapabilityItem
@@ -233,16 +230,16 @@ function CapabilityItem({ icon, title, description }: {
       }}>
         {icon}
       </div>
-      <h4 style={{ 
-        fontSize: '14px', 
-        fontWeight: 600, 
+      <h4 style={{
+        fontSize: '14px',
+        fontWeight: 600,
         color: '#FFFFFF',
         marginBottom: '4px',
       }}>
         {title}
       </h4>
-      <p style={{ 
-        fontSize: '12px', 
+      <p style={{
+        fontSize: '12px',
         color: '#999999',
         margin: 0,
         lineHeight: 1.4,

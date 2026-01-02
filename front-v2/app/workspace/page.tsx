@@ -12,7 +12,7 @@ import { useUser } from "@/hooks/useUser"
  */
 export default function WorkspacePage() {
   const router = useRouter()
-  const { workspaces, isLoading } = useWorkspaceContext()
+  const { workspaces, isLoadingWorkspaces: isLoading } = useWorkspaceContext()
   const { user, isLoading: userLoading } = useUser()
 
   useEffect(() => {

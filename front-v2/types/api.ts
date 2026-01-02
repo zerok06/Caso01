@@ -44,9 +44,10 @@ export interface UserPublic {
   id: string;
   is_active: boolean;
   created_at: string; // ISO 8601 date-time
+  profile_picture?: string | null;
 }
 
-// ==============================================
+// ============================================== 
 // WORKSPACE TYPES
 // ==============================================
 

@@ -1,30 +1,31 @@
 "use client"
 
 import type React from "react"
-
 import { useSearchParams, useRouter } from "next/navigation"
 import { use, useState, useRef, useEffect, useMemo, memo } from "react"
-import {
-  SendOutlined,
-  PlusOutlined,
-  CopyOutlined,
-  AppstoreOutlined,
-  FileTextOutlined,
-  FilePdfOutlined,
-  FileImageOutlined,
-  FileOutlined,
-  CloseOutlined,
-  AudioOutlined,
-  DeleteOutlined,
-  FileWordOutlined,
-  FilePptOutlined,
-  FileExcelOutlined,
-  DownOutlined,
-  DownloadOutlined,
-  LoadingOutlined,
-} from "@ant-design/icons"
-import { Button, Input, Typography, Drawer, Upload, Popover, Modal, App, Select } from "antd"
+import { Button, Input, Drawer, Upload, Popover, Modal, App, Select } from "antd"
 import type { UploadFile } from "antd"
+import {
+  SendHorizontal,
+  Paperclip,
+  Copy,
+  LayoutGrid,
+  FileText,
+  File as FileIcon,
+  Image as ImageIcon,
+  X,
+  Mic,
+  Trash2,
+  ChevronDown,
+  Download,
+  Loader2,
+  ArrowLeft,
+  FolderOpen,
+  Bot,
+  User,
+  Sparkles,
+  Plus
+} from "lucide-react"
 import ReactMarkdown from "react-markdown"
 import remarkGfm from "remark-gfm"
 import Sidebar from "@/components/sidebar"
@@ -35,8 +36,8 @@ import { useWorkspaceContext } from "@/context/WorkspaceContext"
 import { fetchConversationMessages, fetchConversationDocuments, fetchWorkspaceDocuments, deleteDocumentApi, downloadProposalFromMarkdown } from "@/lib/api"
 import { FilePreviewModal } from "@/components/FilePreviewModal"
 import type { DocumentPublic, DocumentChunk } from "@/types/api"
+import { cn } from "@/lib/utils" // Assuming this utility exists, otherwise I'll handle it
 
-const { Text } = Typography
 const { TextArea } = Input
 
 interface Message {
@@ -44,13 +45,6 @@ interface Message {
   role: "user" | "assistant"
   content: string
   timestamp: Date
-}
-
-interface FileItem {
-  id: string
-  name: string
-  type: string
-  size: string
 }
 
 // ============================================
@@ -75,70 +69,74 @@ const MessageItem = memo<MessageItemProps>(({
   remarkPlugins,
   markdownComponents
 }) => {
+  const isUser = message.role === "user"
+
   return (
     <div
-      style={{
-        marginBottom: "24px",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: message.role === "user" ? "flex-end" : "flex-start",
-      }}
+      className={cn(
+        "group w-full flex mb-8",
+        isUser ? "justify-end" : "justify-start"
+      )}
       onMouseEnter={() => onMouseEnter(message.id)}
       onMouseLeave={onMouseLeave}
     >
-      {message.role === "user" ? (
-        <div
-          style={{
-            background: "#2A2A2D",
-            borderRadius: "20px",
-            padding: "16px 20px",
-            maxWidth: "80%",
-          }}
-        >
-          <Text style={{ color: "#FFFFFF", fontSize: "15px", lineHeight: "1.6" }}>{message.content}</Text>
+      <div className={cn(
+        "flex gap-4 max-w-[85%] md:max-w-[75%]",
+        isUser ? "flex-row-reverse" : "flex-row"
+      )}>
+        {/* Avatar */}
+        <div className={cn(
+          "flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center",
+          isUser 
+            ? "bg-zinc-700 text-zinc-300" 
+            : "bg-gradient-to-br from-[#E31837] to-[#FF6B00] text-white shadow-lg shadow-orange-500/20"
+        )}>
+          {isUser ? <User size={16} /> : <Sparkles size={16} />}
         </div>
-      ) : (
-        <div style={{ width: "100%", maxWidth: "90%" }}>
-          <div 
-            className="markdown-content"
-            style={{ 
-              color: "#E3E3E3", 
-              fontSize: "15px", 
-              lineHeight: "1.8" 
-            }}
-          >
-            <ReactMarkdown
-              remarkPlugins={remarkPlugins}
-              components={markdownComponents}
-            >
-              {message.content}
-            </ReactMarkdown>
-          </div>
 
-          {hoveredMessageId === message.id && (
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "4px",
-                marginTop: "16px",
-              }}
+        {/* Content */}
+        <div className="flex flex-col min-w-0">
+          <div className={cn(
+            "relative rounded-2xl px-5 py-3.5 text-[15px] leading-relaxed",
+            isUser 
+              ? "bg-[#2A2A2D] text-zinc-100 border border-white/5 rounded-tr-sm" 
+              : "text-zinc-200 pl-0 pt-1" // AI messages are cleaner, no bubble background usually (or subtle)
+          )}>
+            {isUser ? (
+               <p className="whitespace-pre-wrap m-0">{message.content}</p>
+            ) : (
+              <div className="markdown-content prose prose-invert max-w-none prose-p:leading-relaxed prose-pre:bg-[#1E1E21] prose-pre:border prose-pre:border-white/5 prose-pre:rounded-xl">
+                <ReactMarkdown
+                  remarkPlugins={remarkPlugins}
+                  components={markdownComponents}
+                >
+                  {message.content}
+                </ReactMarkdown>
+              </div>
+            )}
+          </div>
+          
+          {/* Actions (Copy, etc) */}
+          <div className={cn(
+            "flex items-center gap-2 mt-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200",
+            isUser ? "justify-end pr-1" : "justify-start pl-1"
+          )}>
+            <button
+              onClick={() => onCopyMessage(message.content)}
+              className="p-1.5 text-zinc-500 hover:text-zinc-300 hover:bg-white/5 rounded-md transition-colors"
+              title="Copiar mensaje"
             >
-              <Button
-                type="text"
-                icon={<CopyOutlined />}
-                onClick={() => onCopyMessage(message.content)}
-                style={{ color: "#888888", fontSize: "14px" }}
-              />
-            </div>
-          )}
+              <Copy size={14} />
+            </button>
+            <span className="text-[11px] text-zinc-600">
+              {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+            </span>
+          </div>
         </div>
-      )}
+      </div>
     </div>
   )
 }, (prevProps, nextProps) => {
-  // Comparación personalizada para React.memo
-  // Solo re-renderizar si el contenido del mensaje cambió
   return (
     prevProps.message.id === nextProps.message.id &&
     prevProps.message.content === nextProps.message.content &&
@@ -184,47 +182,46 @@ export default function ChatPage({
   // ============================================
   // REFS PARA SCROLL THROTTLING
   // ============================================
-  // lastScrollTimeRef: Timestamp del último scroll para throttling durante streaming
   const lastScrollTimeRef = useRef<number>(0)
 
   // ============================================
   // CONFIGURACIONES ESTABLES DE REACTMARKDOWN
   // ============================================
-  // Memoizar remarkPlugins para evitar recrear la referencia en cada render
   const remarkPlugins = useMemo(() => [remarkGfm], [])
 
-  // Memoizar componentes de ReactMarkdown para evitar recrear objetos en cada render
+  // Modern Markdown Components using Tailwind
   const markdownComponents = useMemo(() => ({
-    p: ({ children }: { children: React.ReactNode }) => <p style={{ margin: "0 0 16px 0" }}>{children}</p>,
-    h1: ({ children }: { children: React.ReactNode }) => <h1 style={{ color: "#FFFFFF", fontSize: "24px", fontWeight: "bold", margin: "24px 0 16px 0" }}>{children}</h1>,
-    h2: ({ children }: { children: React.ReactNode }) => <h2 style={{ color: "#FFFFFF", fontSize: "20px", fontWeight: "bold", margin: "20px 0 12px 0" }}>{children}</h2>,
-    h3: ({ children }: { children: React.ReactNode }) => <h3 style={{ color: "#FFFFFF", fontSize: "18px", fontWeight: "bold", margin: "16px 0 8px 0" }}>{children}</h3>,
-    ul: ({ children }: { children: React.ReactNode }) => <ul style={{ margin: "0 0 16px 0", paddingLeft: "24px" }}>{children}</ul>,
-    ol: ({ children }: { children: React.ReactNode }) => <ol style={{ margin: "0 0 16px 0", paddingLeft: "24px" }}>{children}</ol>,
-    li: ({ children }: { children: React.ReactNode }) => <li style={{ margin: "4px 0" }}>{children}</li>,
+    p: ({ children }: { children: React.ReactNode }) => <p className="mb-4 text-zinc-300 leading-7 last:mb-0">{children}</p>,
+    h1: ({ children }: { children: React.ReactNode }) => <h1 className="text-2xl font-bold text-white mt-6 mb-4">{children}</h1>,
+    h2: ({ children }: { children: React.ReactNode }) => <h2 className="text-xl font-bold text-white mt-5 mb-3">{children}</h2>,
+    h3: ({ children }: { children: React.ReactNode }) => <h3 className="text-lg font-bold text-white mt-4 mb-2">{children}</h3>,
+    ul: ({ children }: { children: React.ReactNode }) => <ul className="list-disc pl-6 mb-4 space-y-1 text-zinc-300">{children}</ul>,
+    ol: ({ children }: { children: React.ReactNode }) => <ol className="list-decimal pl-6 mb-4 space-y-1 text-zinc-300">{children}</ol>,
+    li: ({ children }: { children: React.ReactNode }) => <li className="pl-1">{children}</li>,
     table: ({ children }: { children: React.ReactNode }) => (
-      <div style={{ overflowX: "auto", margin: "16px 0" }}>
-        <table style={{ width: "100%", borderCollapse: "collapse", background: "#1E1E21", borderRadius: "8px", overflow: "hidden" }}>{children}</table>
+      <div className="overflow-x-auto my-4 rounded-lg border border-white/10">
+        <table className="w-full border-collapse bg-[#1A1A1C] text-sm text-left">{children}</table>
       </div>
     ),
-    thead: ({ children }: { children: React.ReactNode }) => <thead style={{ background: "#2A2A2D" }}>{children}</thead>,
-    tbody: ({ children }: { children: React.ReactNode }) => <tbody>{children}</tbody>,
-    tr: ({ children }: { children: React.ReactNode }) => <tr style={{ borderBottom: "1px solid #3A3A3D" }}>{children}</tr>,
-    th: ({ children }: { children: React.ReactNode }) => <th style={{ padding: "12px 16px", textAlign: "left", color: "#FFFFFF", fontWeight: "bold", fontSize: "14px" }}>{children}</th>,
-    td: ({ children }: { children: React.ReactNode }) => <td style={{ padding: "12px 16px", color: "#E3E3E3", fontSize: "14px" }}>{children}</td>,
+    thead: ({ children }: { children: React.ReactNode }) => <thead className="bg-[#252528] text-zinc-200">{children}</thead>,
+    tbody: ({ children }: { children: React.ReactNode }) => <tbody className="divide-y divide-white/5">{children}</tbody>,
+    tr: ({ children }: { children: React.ReactNode }) => <tr className="hover:bg-white/5 transition-colors">{children}</tr>,
+    th: ({ children }: { children: React.ReactNode }) => <th className="px-4 py-3 font-semibold">{children}</th>,
+    td: ({ children }: { children: React.ReactNode }) => <td className="px-4 py-3 text-zinc-400">{children}</td>,
     code: ({ className, children }: { className?: string; children: React.ReactNode }) => {
       const isInline = !className;
       return isInline ? (
-        <code style={{ background: "#2A2A2D", padding: "2px 6px", borderRadius: "4px", fontSize: "14px" }}>{children}</code>
+        <code className="bg-[#2A2A2D] text-red-400 px-1.5 py-0.5 rounded text-[13px] font-mono">{children}</code>
       ) : (
-        <code style={{ display: "block", background: "#1E1E21", padding: "16px", borderRadius: "8px", fontSize: "14px", overflowX: "auto", margin: "8px 0" }}>{children}</code>
+        <div className="relative group">
+            <code className="block bg-[#1E1E21] p-4 rounded-xl text-sm font-mono overflow-x-auto text-zinc-300 my-2 border border-white/5">{children}</code>
+        </div>
       );
     },
-    pre: ({ children }: { children: React.ReactNode }) => <pre style={{ margin: "16px 0", background: "#1E1E21", borderRadius: "8px", overflow: "hidden" }}>{children}</pre>,
-    blockquote: ({ children }: { children: React.ReactNode }) => <blockquote style={{ borderLeft: "4px solid #3A3A3D", paddingLeft: "16px", margin: "16px 0", color: "#AAAAAA" }}>{children}</blockquote>,
-    a: ({ href, children }: { href?: string; children: React.ReactNode }) => <a href={href} target="_blank" rel="noopener noreferrer" style={{ color: "#3B82F6", textDecoration: "underline" }}>{children}</a>,
-    strong: ({ children }: { children: React.ReactNode }) => <strong style={{ color: "#FFFFFF", fontWeight: "bold" }}>{children}</strong>,
-    em: ({ children }: { children: React.ReactNode }) => <em style={{ fontStyle: "italic" }}>{children}</em>,
+    pre: ({ children }: { children: React.ReactNode }) => <pre className="m-0 bg-transparent">{children}</pre>,
+    blockquote: ({ children }: { children: React.ReactNode }) => <blockquote className="border-l-4 border-zinc-600 pl-4 my-4 italic text-zinc-500">{children}</blockquote>,
+    a: ({ href, children }: { href?: string; children: React.ReactNode }) => <a href={href} target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:text-blue-300 underline underline-offset-4">{children}</a>,
+    strong: ({ children }: { children: React.ReactNode }) => <strong className="text-white font-semibold">{children}</strong>,
   }), [])
 
   // Estados para archivos adjuntos
@@ -260,19 +257,19 @@ export default function ChatPage({
   const getFileIcon = (fileType: string) => {
     const type = fileType.toLowerCase()
     if (type.includes('pdf')) {
-      return <FilePdfOutlined style={{ color: "#E31837", fontSize: "20px" }} />
+      return <FileText className="text-[#E31837]" size={20} />
     } else if (type.includes('image') || type.includes('png') || type.includes('jpg') || type.includes('jpeg')) {
-      return <FileImageOutlined style={{ color: "#52C41A", fontSize: "20px" }} />
+      return <ImageIcon className="text-green-500" size={20} />
     } else if (type.includes('word') || type.includes('doc')) {
-      return <FileWordOutlined style={{ color: "#2B579A", fontSize: "20px" }} />
+      return <FileText className="text-blue-600" size={20} />
     } else if (type.includes('powerpoint') || type.includes('ppt') || type.includes('presentation')) {
-      return <FilePptOutlined style={{ color: "#D24726", fontSize: "20px" }} />
+      return <FileText className="text-orange-600" size={20} />
     } else if (type.includes('excel') || type.includes('xls') || type.includes('sheet')) {
-      return <FileExcelOutlined style={{ color: "#217346", fontSize: "20px" }} />
+      return <FileText className="text-green-600" size={20} />
     } else if (type.includes('text') || type.includes('txt')) {
-      return <FileTextOutlined style={{ color: "#1890FF", fontSize: "20px" }} />
+      return <FileText className="text-blue-400" size={20} />
     } else {
-      return <FileOutlined style={{ color: "#888888", fontSize: "20px" }} />
+      return <FileIcon className="text-zinc-500" size={20} />
     }
   }
 
@@ -281,23 +278,21 @@ export default function ChatPage({
     const loadDocuments = async () => {
       setIsLoadingDocuments(true)
       try {
-        // Cargar documentos del workspace
         const workspaceDocs = await fetchWorkspaceDocuments(id)
         setWorkspaceFiles(workspaceDocs)
 
-        // Cargar documentos de la conversación actual
         const conversationDocs = await fetchConversationDocuments({
           workspaceId: id,
           conversationId: chatId,
         })
         setChatFiles(conversationDocs)
-      } catch (error) {
-        console.error("Error loading documents:", error)
+      } catch (error: any) {
+        const is404 = error?.response?.status === 404 || error?.status === 404
+        if (!is404) console.error("Error loading documents:", error)
       } finally {
         setIsLoadingDocuments(false)
       }
     }
-
     loadDocuments()
   }, [id, chatId])
 
@@ -308,18 +303,13 @@ export default function ChatPage({
       content: `¿Estás seguro de que deseas eliminar "${fileName}"? Esta acción no se puede deshacer.`,
       okText: 'Eliminar',
       cancelText: 'Cancelar',
-      okButtonProps: {
-        danger: true,
-      },
+      okButtonProps: { danger: true },
       onOk: async () => {
         try {
           await deleteDocumentApi(documentId)
           message.success('Documento eliminado correctamente')
-          
-          // Recargar ambas listas de documentos
           const workspaceDocs = await fetchWorkspaceDocuments(id)
           setWorkspaceFiles(workspaceDocs)
-          
           const conversationDocs = await fetchConversationDocuments({
             workspaceId: id,
             conversationId: chatId,
@@ -339,23 +329,16 @@ export default function ChatPage({
       try {
         setIsLoadingHistory(true)
         const conversation = await fetchConversationMessages(id, chatId)
-        
-        // Establecer el título de la conversación
         setConversationTitle(conversation.title)
         
-        // Restaurar estado de propuesta si existe
         if (conversation.has_proposal) {
           setProposalGenerated(true)
-          // Buscar el último mensaje del asistente para obtener el markdown
           if (conversation.messages && conversation.messages.length > 0) {
             const lastAssistantMessage = [...conversation.messages].reverse().find(m => m.role === "assistant")
-            if (lastAssistantMessage) {
-              setProposalMarkdown(lastAssistantMessage.content)
-            }
+            if (lastAssistantMessage) setProposalMarkdown(lastAssistantMessage.content)
           }
         }
         
-        // Convertir mensajes de la API al formato local
         if (conversation.messages && conversation.messages.length > 0) {
           const loadedMessages: Message[] = conversation.messages.map((msg) => ({
             id: msg.id,
@@ -365,7 +348,6 @@ export default function ChatPage({
           }))
           setMessages(loadedMessages)
         } else if (initialMessage) {
-          // Si no hay mensajes pero hay un mensaje inicial (nuevo chat)
           const userMessage: Message = {
             id: "1",
             role: "user",
@@ -373,11 +355,8 @@ export default function ChatPage({
             timestamp: new Date(),
           }
           setMessages([userMessage])
-          
-          // Limpiar la URL removiendo los query params
           router.replace(`/workspace/${id}/chat/${chatId}`, { scroll: false })
           
-          // Simular respuesta (esto debería ser reemplazado por llamada real a la API)
           setTimeout(() => {
             const aiResponse: Message = {
               id: "2",
@@ -388,9 +367,9 @@ export default function ChatPage({
             setMessages((prev) => [...prev, aiResponse])
           }, 1000)
         }
-      } catch (error) {
-        console.error("Error loading conversation history:", error)
-        // Si hay error y hay mensaje inicial, mostrar ese
+      } catch (error: any) {
+        const is404 = error?.response?.status === 404 || error?.status === 404
+        if (!is404) console.error("Error loading conversation history:", error)
         if (initialMessage) {
           const userMessage: Message = {
             id: "1",
@@ -408,18 +387,14 @@ export default function ChatPage({
     loadConversationHistory()
   }, [id, chatId, initialMessage, router])
 
-  // Scroll optimizado con throttling
   useEffect(() => {
     const now = Date.now()
-    
     if (isStreaming) {
-      // Durante streaming, hacer scroll sin animación y con throttle
       if (now - lastScrollTimeRef.current > 100) {
         messagesEndRef.current?.scrollIntoView({ behavior: "auto" })
         lastScrollTimeRef.current = now
       }
     } else {
-      // Fuera de streaming, scroll smooth normal
       messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
     }
   }, [messages, isStreaming])
@@ -444,7 +419,6 @@ export default function ChatPage({
     setCurrentSources([])
     setIsStreaming(true)
 
-    // Crear ID para el mensaje del asistente
     messageCounterRef.current += 1
     const assistantMessageId = `msg-${Date.now()}-${messageCounterRef.current}`
     let firstChunkReceived = false
@@ -458,9 +432,7 @@ export default function ChatPage({
           model: "string",
         },
         {
-          // Llamado cuando recibimos contenido del asistente
           onContentUpdate: (content: string) => {
-            // En la primera actualización, agregar el mensaje al chat
             if (!firstChunkReceived) {
               firstChunkReceived = true
               setIsLoading(false)
@@ -472,36 +444,22 @@ export default function ChatPage({
               }
               setMessages((prev) => [...prev, assistantMessage])
             } else {
-              // Actualizar contenido del mensaje existente
               setMessages((prev) =>
                 prev.map((msg) =>
-                  msg.id === assistantMessageId
-                    ? { ...msg, content }
-                    : msg
+                  msg.id === assistantMessageId ? { ...msg, content } : msg
                 )
               )
             }
           },
-
-          // Llamado cuando recibimos sources/referencias
           onSourcesUpdate: (sources: DocumentChunk[]) => {
             setCurrentSources(sources)
           },
-
-          // Llamado cuando detectamos intención
           onIntentDetected: (intent: string) => {
-            // Guardar la intención en ref, pero no mostrar el botón hasta que termine
             detectedIntentRef.current = intent
           },
-
-          // Llamado cuando finaliza el streaming
           onComplete: (conversationId: string) => {
-            console.log("Streaming completed, conversation_id:", conversationId)
             setIsStreaming(false)
-            
-            // Mostrar el botón de propuesta solo cuando termine el streaming
             if (detectedIntentRef.current === "GENERATE_PROPOSAL") {
-              // Guardar el contenido del último mensaje (que es la propuesta)
               setMessages((prev) => {
                 const lastMessage = prev[prev.length - 1]
                 if (lastMessage && lastMessage.role === "assistant") {
@@ -511,18 +469,10 @@ export default function ChatPage({
               })
               setProposalGenerated(true)
             }
-            
-            // Solo apagar loading si no se recibió ningún chunk
-            if (!firstChunkReceived) {
-              setIsLoading(false)
-            }
+            if (!firstChunkReceived) setIsLoading(false)
           },
-
-          // Llamado si hay error
           onError: (error: Error) => {
-            console.error("Error sending message:", error)
-            message.error("Error al enviar el mensaje. Inténtalo de nuevo.")
-            // Remover el mensaje del asistente si falla
+            message.error("Error al enviar el mensaje.")
             setMessages((prev) => prev.filter((msg) => msg.id !== assistantMessageId))
             setIsLoading(false)
             setIsStreaming(false)
@@ -530,14 +480,9 @@ export default function ChatPage({
         }
       )
     } catch (error) {
-      console.error("Error sending message:", error)
-      message.error("Error al enviar el mensaje. Inténtalo de nuevo.")
-
-      // Remover mensajes si falla
+      message.error("Error al enviar el mensaje.")
       setMessages((prev) =>
-        prev.filter(
-          (msg) => msg.id !== newUserMessage.id && msg.id !== assistantMessageId
-        )
+        prev.filter((msg) => msg.id !== newUserMessage.id && msg.id !== assistantMessageId)
       )
       setIsLoading(false)
       setIsStreaming(false)
@@ -556,22 +501,11 @@ export default function ChatPage({
     message.success("Copiado al portapapeles")
   }
 
-  // Handler para descargar propuesta
   const handleDownloadProposal = async () => {
-    if (!proposalMarkdown) {
-      message.error("No hay contenido de propuesta para descargar")
-      return
-    }
-
+    if (!proposalMarkdown) return message.error("No hay contenido de propuesta para descargar")
     setIsDownloadingProposal(true)
     try {
-      const blob = await downloadProposalFromMarkdown(
-        proposalMarkdown,
-        "Propuesta_Comercial",
-        "docx"
-      )
-
-      // Crear enlace de descarga
+      const blob = await downloadProposalFromMarkdown(proposalMarkdown, "Propuesta_Comercial", "docx")
       const url = window.URL.createObjectURL(blob)
       const a = document.createElement("a")
       a.href = url
@@ -580,99 +514,63 @@ export default function ChatPage({
       a.click()
       window.URL.revokeObjectURL(url)
       document.body.removeChild(a)
-
       message.success("Propuesta descargada exitosamente")
     } catch (error) {
-      console.error("Error al descargar propuesta:", error)
       message.error("Error al descargar la propuesta")
     } finally {
       setIsDownloadingProposal(false)
     }
   }
 
-  // Función para iniciar/detener grabación de voz
   const toggleRecording = () => {
     if (isRecording) {
-      // Detener grabación
-      if (recognitionRef.current) {
-        recognitionRef.current.stop()
-      }
+      if (recognitionRef.current) recognitionRef.current.stop()
       setIsRecording(false)
     } else {
-      // Iniciar grabación
       const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition
-      if (!SpeechRecognition) {
-        message.error("Tu navegador no soporta reconocimiento de voz")
-        return
-      }
+      if (!SpeechRecognition) return message.error("Tu navegador no soporta reconocimiento de voz")
 
       const recognition = new SpeechRecognition()
       recognition.lang = "es-ES"
       recognition.continuous = true
       recognition.interimResults = true
-
       recognition.onresult = (event) => {
         let finalTranscript = ""
-        let interimTranscript = ""
-
         for (let i = event.resultIndex; i < event.results.length; i++) {
           const transcript = event.results[i][0].transcript
-          if (event.results[i].isFinal) {
-            finalTranscript += transcript
-          } else {
-            interimTranscript += transcript
-          }
+          if (event.results[i].isFinal) finalTranscript += transcript
         }
-
-        if (finalTranscript) {
-          setInputMessage((prev) => prev + finalTranscript)
-        }
+        if (finalTranscript) setInputMessage((prev) => prev + finalTranscript)
       }
-
-      recognition.onerror = (event) => {
-        console.error("Error en reconocimiento de voz:", event.error)
+      recognition.onerror = () => {
         message.error("Error en el reconocimiento de voz")
         setIsRecording(false)
       }
-
-      recognition.onend = () => {
-        setIsRecording(false)
-      }
-
+      recognition.onend = () => setIsRecording(false)
       recognitionRef.current = recognition
       recognition.start()
       setIsRecording(true)
     }
   }
 
-  // Función para obtener ícono de archivo por extensión
   const getAttachmentIcon = (fileName: string) => {
     const ext = fileName.toLowerCase().split('.').pop()
     switch (ext) {
-      case 'pdf':
-        return <FilePdfOutlined style={{ fontSize: "16px", color: "#E31837" }} />
-      case 'doc':
-      case 'docx':
-        return <FileWordOutlined style={{ fontSize: "16px", color: "#2B579A" }} />
-      case 'ppt':
-      case 'pptx':
-        return <FilePptOutlined style={{ fontSize: "16px", color: "#D24726" }} />
-      case 'xls':
-      case 'xlsx':
-        return <FileExcelOutlined style={{ fontSize: "16px", color: "#217346" }} />
-      default:
-        return <FileTextOutlined style={{ fontSize: "16px", color: "#888888" }} />
+      case 'pdf': return <FileText className="text-[#E31837]" size={16} />
+      case 'doc': case 'docx': return <FileText className="text-blue-600" size={16} />
+      case 'ppt': case 'pptx': return <FileText className="text-orange-600" size={16} />
+      case 'xls': case 'xlsx': return <FileText className="text-green-600" size={16} />
+      default: return <FileText className="text-zinc-500" size={16} />
     }
   }
 
-  // Función para remover archivo adjunto
   const handleRemoveAttachment = (uid: string) => {
     setAttachedFiles((prev) => prev.filter((f) => f.uid !== uid))
   }
 
-  // Contenido del popover de archivos
+  // Popover para subir archivos
   const fileUploadContent = (
-    <div style={{ width: 280 }}>
+    <div className="w-[280px]">
       <Upload.Dragger
         multiple
         accept={allowedFileTypes.join(',')}
@@ -692,67 +590,35 @@ export default function ChatPage({
           }])
           return false
         }}
-        onRemove={(file) => {
-          handleRemoveAttachment(file.uid)
-        }}
+        onRemove={(file) => handleRemoveAttachment(file.uid)}
         showUploadList={false}
-        style={{
-          background: "#2A2A2D",
-          border: "1px dashed #3A3A3D",
-          borderRadius: "8px",
-        }}
+        className="bg-[#2A2A2D] border border-dashed border-white/10 rounded-xl hover:border-[#E31837]/50 transition-colors"
       >
-        <p style={{ color: "#888888", marginBottom: "8px" }}>
-          <PlusOutlined style={{ fontSize: "24px" }} />
-        </p>
-        <p style={{ color: "#E3E3E3", fontSize: "13px", margin: 0 }}>
-          Arrastra archivos o haz clic
-        </p>
-        <p style={{ color: "#666666", fontSize: "11px", margin: "4px 0 0" }}>
-          PDF, Word, PowerPoint, Excel
-        </p>
+        <div className="py-4">
+          <Paperclip className="text-zinc-500 mb-2 mx-auto" size={32} />
+          <p className="text-zinc-300 text-sm mb-1">Arrastra archivos o haz clic</p>
+          <p className="text-zinc-600 text-xs m-0">PDF, Word, PowerPoint, Excel</p>
+        </div>
       </Upload.Dragger>
 
       {attachedFiles.length > 0 && (
-        <div style={{ marginTop: "12px", maxHeight: "150px", overflowY: "auto" }}>
+        <div className="mt-3 max-h-[150px] overflow-y-auto space-y-2">
           {attachedFiles.map((file) => (
-            <div
-              key={file.uid}
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "8px",
-                padding: "8px",
-                background: "#1E1E21",
-                borderRadius: "6px",
-                marginBottom: "6px",
-              }}
-            >
+            <div key={file.uid} className="flex items-center gap-2 p-2 bg-[#1E1F20] rounded-lg">
               {getAttachmentIcon(file.name)}
-              <span style={{ flex: 1, color: "#E3E3E3", fontSize: "12px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                {file.name}
-              </span>
-              <Button
-                type="text"
-                size="small"
-                icon={<DeleteOutlined />}
-                onClick={() => handleRemoveAttachment(file.uid)}
-                style={{ color: "#888888", padding: "2px" }}
-              />
+              <span className="flex-1 text-zinc-300 text-xs truncate">{file.name}</span>
+              <button onClick={() => handleRemoveAttachment(file.uid)} className="p-1 text-zinc-500 hover:text-[#E31837]">
+                <X size={14} />
+              </button>
             </div>
           ))}
         </div>
       )}
-
       <Button
         type="primary"
         block
         onClick={() => setShowFilePopover(false)}
-        style={{
-          marginTop: "12px",
-          background: "#E31837",
-          borderColor: "#E31837",
-        }}
+        className="mt-3 bg-[#E31837] hover:bg-[#c41530] border-none rounded-xl h-9"
       >
         Listo
       </Button>
@@ -760,65 +626,38 @@ export default function ChatPage({
   )
 
   const renderFileSection = (title: string, files: DocumentPublic[]) => (
-    <div style={{ marginBottom: "24px" }}>
-      <Text style={{ color: "#888888", fontSize: "12px", textTransform: "uppercase", letterSpacing: "1px" }}>
-        {title}
-      </Text>
-      <div style={{ marginTop: "12px", display: "flex", flexDirection: "column", gap: "8px" }}>
+    <div className="mb-6">
+      <h3 className="text-zinc-500 text-xs uppercase tracking-wider mb-3 px-2">{title}</h3>
+      <div className="space-y-1">
         {files.length === 0 ? (
-          <Text style={{ color: "#666666", fontSize: "13px", fontStyle: "italic" }}>No hay archivos</Text>
+          <p className="text-zinc-600 text-sm italic px-2">No hay archivos</p>
         ) : (
           files.map((file) => (
             <div
               key={file.id}
               onClick={() => setPreviewDoc(file)}
-              style={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
-                gap: "12px",
-                padding: "10px 12px",
-                background: "#2A2A2D",
-                borderRadius: "8px",
-                cursor: "pointer",
-              }}
+              className="group flex items-center gap-3 p-2 hover:bg-white/5 rounded-lg cursor-pointer transition-colors"
             >
-              <div style={{ display: "flex", alignItems: "center", gap: "12px", flex: 1, minWidth: 0 }}>
-                {getFileIcon(file.file_type)}
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <Text style={{ color: "#E3E3E3", fontSize: "13px", display: "block" }} ellipsis>
-                    {file.file_name}
-                  </Text>
-                  <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                    <Text style={{ color: "#666666", fontSize: "11px" }}>
-                      {file.status === 'COMPLETED' ? `${file.chunk_count} chunks` : file.status}
-                    </Text>
-                    {file.status === 'COMPLETED' && (
-                      <span style={{ color: "#52C41A", fontSize: "10px" }}>✓</span>
-                    )}
-                    {file.status === 'PROCESSING' && (
-                      <span style={{ color: "#FFA940", fontSize: "10px" }}>⟳</span>
-                    )}
-                    {file.status === 'FAILED' && (
-                      <span style={{ color: "#E31837", fontSize: "10px" }}>✗</span>
-                    )}
-                  </div>
+              <div className="p-2 bg-[#1E1F20] rounded-lg border border-white/5">
+                 {getFileIcon(file.file_type)}
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-zinc-300 text-sm truncate mb-0.5">{file.file_name}</p>
+                <div className="flex items-center gap-2">
+                   <span className="text-[10px] text-zinc-600 uppercase">{file.file_type}</span>
+                   {file.status === 'PROCESSING' && <Loader2 className="animate-spin text-orange-400" size={10} />}
+                   {file.status === 'FAILED' && <span className="text-red-500 text-xs">Error</span>}
                 </div>
               </div>
-              <Button
-                type="text"
-                size="small"
-                icon={<DeleteOutlined style={{ fontSize: "12px" }} />}
+              <button
                 onClick={(e) => {
                   e.stopPropagation()
                   handleDeleteDocument(file.id, file.file_name)
                 }}
-                style={{
-                  color: "#E31837",
-                  padding: "4px",
-                  minWidth: "auto",
-                }}
-              />
+                className="opacity-0 group-hover:opacity-100 p-1.5 text-zinc-500 hover:text-[#E31837] rounded-md transition-all"
+              >
+                <Trash2 size={14} />
+              </button>
             </div>
           ))
         )}
@@ -827,427 +666,275 @@ export default function ChatPage({
   )
 
   return (
-    <div
-      style={{
-        display: "flex",
-        minHeight: "100vh",
-        background: "#131314",
-      }}
-    >
+    <div className="flex h-screen bg-[#131314] overflow-hidden selection:bg-[#E31837]/30">
       <Sidebar />
 
-      <Drawer
-        title={
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-            <Text style={{ color: "#E3E3E3", fontSize: "16px", fontWeight: 500 }}>Archivos</Text>
-            <Button
-              type="text"
-              icon={<CloseOutlined />}
-              onClick={() => setFilesDrawerOpen(false)}
-              style={{ color: "#888888" }}
-            />
-          </div>
-        }
-        placement="right"
-        onClose={() => setFilesDrawerOpen(false)}
-        open={filesDrawerOpen}
-        closable={false}
-        styles={{
-          wrapper: { width: 320 },
-          header: { background: "#1E1E21", borderBottom: "1px solid #2A2A2D", padding: "16px" },
-          body: { background: "#1E1E21", padding: "16px" },
-        }}
-      >
-        {isLoadingDocuments ? (
-          <div style={{ display: "flex", justifyContent: "center", padding: "40px" }}>
-            <Text style={{ color: "#888888" }}>Cargando documentos...</Text>
-          </div>
-        ) : (
-          <>
-            {renderFileSection("Archivos del Workspace", workspaceFiles)}
-            {renderFileSection("Archivos del Chat", chatFiles)}
-          </>
-        )}
-      </Drawer>
-
-      <div
-        style={{
-          flex: 1,
-          display: "flex",
-          flexDirection: "column",
-          background: "#131314",
-          height: "100vh",
-          overflow: "hidden",
-        }}
-      >
+      {/* Main Content */}
+      <div className="flex-1 flex flex-col min-w-0 relative">
+        
         {/* Header */}
-        <header
-          style={{
-            padding: "16px 24px",
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            borderBottom: "1px solid #2A2A2D",
-            flexShrink: 0,
-          }}
-        >
-          <div style={{ cursor: "pointer" }} onClick={() => router.push('/')}>
-            <img 
-              src="/logo.svg" 
-              alt="Logo" 
-              style={{ height: "40px" }} 
-            />
+        <header className="absolute top-0 left-0 right-0 z-20 px-6 py-4 flex justify-between items-center bg-[#131314]/80 backdrop-blur-md border-b border-white/5">
+          <div className="flex items-center gap-4">
+            <button 
+              onClick={() => router.push(`/workspace/${id}`)}
+              className="p-2 -ml-2 text-zinc-400 hover:text-white hover:bg-white/5 rounded-full transition-colors"
+            >
+              <ArrowLeft size={20} />
+            </button>
+            <div>
+              <h1 className="text-base font-semibold text-white flex items-center gap-2">
+                <Sparkles size={16} className="text-[#E31837]" />
+                {conversationTitle}
+              </h1>
+              <div className="flex items-center gap-2">
+                 <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></span>
+                 <p className="text-xs text-zinc-500">Online • {selectedModel}</p>
+              </div>
+            </div>
           </div>
 
-          {/* Chat Name - center */}
-          <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-            <Text style={{ color: "#FFFFFF", fontSize: "16px" }}>
-              {conversationTitle}
-            </Text>
-          </div>
-
-          <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-            <Button
-              type="text"
-              icon={<AppstoreOutlined style={{ fontSize: "20px" }} />}
+          <div className="flex items-center gap-3">
+            <button
               onClick={() => setFilesDrawerOpen(true)}
-              style={{
-                color: "#888888",
-                width: "40px",
-                height: "40px",
-                borderRadius: "8px",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            />
+              className="p-2 text-zinc-400 hover:text-white hover:bg-white/5 rounded-full transition-colors relative"
+              title="Ver archivos"
+            >
+              <LayoutGrid size={20} />
+              {(workspaceFiles.length > 0 || chatFiles.length > 0) && (
+                <span className="absolute top-1 right-1 w-2 h-2 bg-[#E31837] rounded-full border-2 border-[#0A0A0B]"></span>
+              )}
+            </button>
+            <div className="w-px h-6 bg-white/10 mx-1"></div>
             <UserMenu user={user} />
           </div>
         </header>
 
-        {/* Messages area */}
-        <main
-          className="chat-scrollbar"
-          style={{
-            flex: 1,
-            overflowY: "auto",
-            padding: "24px",
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            minHeight: 0,
-          }}
-        >
-          <div style={{ width: "100%", maxWidth: "800px" }}>
+        {/* Chat Area */}
+        <div className="flex-1 overflow-y-auto scroll-smooth chat-scrollbar">
+          <div className="max-w-4xl mx-auto w-full pt-24 pb-10 px-4 md:px-6">
             {isLoadingHistory ? (
-              <div style={{ display: "flex", justifyContent: "center", padding: "40px" }}>
-                <Text style={{ color: "#888888" }}>Cargando conversación...</Text>
+              <div className="flex flex-col items-center justify-center py-20 gap-4">
+                <Loader2 className="animate-spin text-[#E31837]" size={32} />
+                <p className="text-zinc-500 text-sm">Cargando conversación...</p>
               </div>
             ) : messages.length === 0 ? (
-              <div style={{ display: "flex", justifyContent: "center", padding: "40px" }}>
-                <Text style={{ color: "#888888" }}>No hay mensajes en esta conversación</Text>
+              <div className="flex flex-col items-center justify-center py-32 text-center">
+                <div className="w-20 h-20 bg-gradient-to-br from-[#E31837]/20 to-[#FF6B00]/20 rounded-3xl flex items-center justify-center mb-6 border border-[#E31837]/20 shadow-[0_0_40px_-10px_rgba(227,24,55,0.3)]">
+                  <Sparkles className="text-[#E31837]" size={40} />
+                </div>
+                <h2 className="text-2xl font-bold text-white mb-2">¿En qué puedo ayudarte hoy?</h2>
+                <p className="text-zinc-500 max-w-md">
+                  Sube documentos, analiza propuestas o genera contenido nuevo utilizando IA avanzada.
+                </p>
               </div>
             ) : (
-              messages.map((msg) => (
-                <MessageItem
-                  key={msg.id}
-                  message={msg}
-                  hoveredMessageId={hoveredMessageId}
-                  onMouseEnter={setHoveredMessageId}
-                  onMouseLeave={() => setHoveredMessageId(null)}
-                  onCopyMessage={handleCopyMessage}
-                  remarkPlugins={remarkPlugins}
-                  markdownComponents={markdownComponents}
-                />
-              ))
-            )}
+              <>
+                {messages.map((msg) => (
+                  <MessageItem
+                    key={msg.id}
+                    message={msg}
+                    hoveredMessageId={hoveredMessageId}
+                    onMouseEnter={setHoveredMessageId}
+                    onMouseLeave={() => setHoveredMessageId(null)}
+                    onCopyMessage={handleCopyMessage}
+                    remarkPlugins={remarkPlugins}
+                    markdownComponents={markdownComponents}
+                  />
+                ))}
 
-            {isLoading && (
-              <div style={{ marginBottom: "24px" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "12px" }}>
-                  <Text style={{ color: "#AAAAAA", fontSize: "14px" }}>Pensando...</Text>
-                </div>
-              </div>
-            )}
-
-            {/* Mensaje de propuesta generada */}
-            {proposalGenerated && !isLoading && (
-              <div style={{ marginBottom: "24px" }}>
-                <div
-                  style={{
-                    background: "#1E1E21",
-                    border: "1px solid #3A3A3D",
-                    borderRadius: "12px",
-                    padding: "16px 20px",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "space-between",
-                    gap: "16px",
-                  }}
-                >
-                  <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-                    <span style={{ fontSize: "24px" }}>📄</span>
-                    <div>
-                      <Text style={{ color: "#FFFFFF", fontSize: "15px", fontWeight: 500, display: "block" }}>
-                        Propuesta generada
-                      </Text>
-                      <Text style={{ color: "#888888", fontSize: "13px", display: "block" }}>
-                        Tu propuesta está lista para descargar
-                      </Text>
+                {isLoading && (
+                  <div className="flex gap-4 max-w-[75%] mb-8 animate-pulse">
+                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#E31837] to-[#FF6B00] flex items-center justify-center shadow-lg shadow-orange-500/20">
+                      <Loader2 size={16} className="text-white animate-spin" />
+                    </div>
+                    <div className="flex items-center gap-2">
+                       <div className="w-2 h-2 bg-zinc-600 rounded-full animate-bounce [animation-delay:-0.3s]"></div>
+                       <div className="w-2 h-2 bg-zinc-600 rounded-full animate-bounce [animation-delay:-0.15s]"></div>
+                       <div className="w-2 h-2 bg-zinc-600 rounded-full animate-bounce"></div>
                     </div>
                   </div>
-                  <Button
-                    type="primary"
-                    icon={isDownloadingProposal ? <LoadingOutlined /> : <DownloadOutlined />}
-                    loading={isDownloadingProposal}
-                    onClick={handleDownloadProposal}
-                    style={{
-                      background: "#E31837",
-                      borderColor: "#E31837",
-                      borderRadius: "8px",
-                      height: "36px",
-                      padding: "0 20px",
-                    }}
-                  >
-                    {isDownloadingProposal ? "Descargando..." : "Descargar"}
-                  </Button>
-                </div>
-              </div>
+                )}
+                
+                {/* Proposal Widget */}
+                {proposalGenerated && !isLoading && (
+                  <div className="ml-12 mb-8 max-w-md">
+                    <div className="bg-[#1E1F20] border border-white/5 rounded-2xl p-4 flex items-center gap-4 hover:border-[#E31837]/30 transition-colors shadow-lg shadow-black/20">
+                      <div className="w-10 h-10 bg-[#E31837]/10 rounded-xl flex items-center justify-center text-2xl">
+                        📄
+                      </div>
+                      <div className="flex-1">
+                        <p className="text-white text-sm font-medium">Propuesta generada</p>
+                        <p className="text-zinc-500 text-xs">Lista para descargar</p>
+                      </div>
+                      <Button
+                        type="primary"
+                        icon={isDownloadingProposal ? <Loader2 className="animate-spin" size={14} /> : <Download size={14} />}
+                        loading={isDownloadingProposal}
+                        onClick={handleDownloadProposal}
+                        className="bg-[#E31837] hover:bg-[#c41530] border-none rounded-lg h-8 text-xs font-medium"
+                      >
+                        Descargar
+                      </Button>
+                    </div>
+                  </div>
+                )}
+              </>
             )}
-
             <div ref={messagesEndRef} />
           </div>
-        </main>
+        </div>
 
-        {/* Input area at bottom */}
-        <div
-          style={{
-            padding: "16px 24px 24px",
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            flexShrink: 0,
-            background: "#131314",
-          }}
-        >
-          <div style={{ width: "100%", maxWidth: "800px" }}>
-            {/* Mostrar archivos adjuntos */}
+        {/* Input Area */}
+        <div className="flex-shrink-0 px-4 pb-6 bg-[#131314] z-20">
+          <div className="max-w-4xl mx-auto w-full">
+            {/* Attachments Preview */}
             {attachedFiles.length > 0 && (
-              <div
-                style={{
-                  display: "flex",
-                  flexWrap: "wrap",
-                  gap: "8px",
-                  marginBottom: "8px",
-                  padding: "8px 12px",
-                  background: "#1E1E21",
-                  borderRadius: "12px",
-                }}
-              >
+              <div className="flex flex-wrap gap-2 mb-3 px-2">
                 {attachedFiles.map((file) => (
-                  <div
-                    key={file.uid}
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "6px",
-                      padding: "6px 10px",
-                      background: "#2A2A2D",
-                      borderRadius: "8px",
-                    }}
-                  >
-                    {getAttachmentIcon(file.name)}
-                    <span style={{ color: "#E3E3E3", fontSize: "12px", maxWidth: "120px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                      {file.name}
-                    </span>
-                    <Button
-                      type="text"
-                      size="small"
-                      icon={<CloseOutlined style={{ fontSize: "10px" }} />}
-                      onClick={() => handleRemoveAttachment(file.uid)}
-                      style={{ color: "#888888", padding: "0", width: "16px", height: "16px", minWidth: "16px" }}
-                    />
+                  <div key={file.uid} className="flex items-center gap-2 px-3 py-1.5 bg-[#1E1F20] rounded-lg border border-white/5 animate-fade-in-up group">
+                    <div className="p-1 bg-white/5 rounded">
+                      <FileText size={12} className="text-zinc-400" />
+                    </div>
+                    <span className="text-zinc-300 text-xs font-medium max-w-[150px] truncate">{file.name}</span>
+                    <button onClick={() => handleRemoveAttachment(file.uid)} className="text-zinc-500 hover:text-[#E31837] transition-colors ml-1">
+                      <X size={14} />
+                    </button>
                   </div>
                 ))}
               </div>
             )}
 
-            <div
-              style={{
-                background: "#2A2A2D",
-                borderRadius: "28px",
-                padding: "12px 16px",
-                display: "flex",
-                flexDirection: "column",
-                gap: "8px",
-                border: isRecording ? "2px solid #E31837" : "2px solid transparent",
-                boxShadow: isRecording ? "0 0 20px rgba(227, 24, 55, 0.3)" : "none",
-                transition: "all 0.3s ease",
-              }}
+            {/* Gemini-style Input Container */}
+            <div 
+              className={`
+                relative flex items-end gap-3 p-3 bg-[#1E1F20] rounded-[28px] transition-all duration-200
+                ${isRecording ? 'ring-1 ring-[#E31837]/50 bg-[#1E1F20]' : 'hover:bg-[#252528] focus-within:bg-[#252528]'}
+              `}
             >
-              <TextArea
-                placeholder={isRecording ? "Escuchando..." : "Escribe tu mensaje..."}
-                value={inputMessage}
-                onChange={(e) => setInputMessage(e.target.value)}
-                onKeyDown={handleKeyPress}
-                autoSize={{ minRows: 1, maxRows: 4 }}
-                variant="borderless"
-                style={{
-                  background: "transparent",
-                  color: "#FFFFFF",
-                  fontSize: "15px",
-                  padding: "4px 8px",
-                  resize: "none",
-                }}
-              />
-
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                }}
-              >
-                <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                  <Popover
-                    content={fileUploadContent}
-                    trigger="click"
-                    open={showFilePopover}
-                    onOpenChange={setShowFilePopover}
-                    placement="topLeft"
-                    styles={{
-                      container: {
-                        background: "#1E1E21",
-                        border: "1px solid #3A3A3D",
-                        borderRadius: "12px",
-                        padding: "16px",
-                      }
-                    }}
+              
+              {/* Left Action: Add / Attach */}
+              <div className="flex-shrink-0 mb-0.5">
+                <Popover
+                  content={fileUploadContent}
+                  trigger="click"
+                  open={showFilePopover}
+                  onOpenChange={setShowFilePopover}
+                  placement="topLeft"
+                  overlayClassName="dark-popover"
+                >
+                  <button 
+                    className="w-10 h-10 rounded-full bg-[#2A2A2D] text-zinc-400 hover:text-white hover:bg-[#333] flex items-center justify-center transition-all duration-200 hover:scale-105 active:scale-95"
+                    title="Adjuntar archivo"
                   >
-                    <Button
-                      type="text"
-                      icon={<PlusOutlined />}
-                      style={{
-                        color: attachedFiles.length > 0 ? "#E31837" : "#888888",
-                        width: "36px",
-                        height: "36px",
-                        borderRadius: "50%",
-                        background: "#3A3A3D",
-                      }}
-                    />
-                  </Popover>
+                    <Plus size={20} strokeWidth={2} />
+                  </button>
+                </Popover>
+              </div>
 
+              {/* Text Area */}
+              <div className="flex-1 min-w-0 py-2">
+                <TextArea
+                  placeholder={isRecording ? "Escuchando..." : "Escribe un mensaje..."}
+                  value={inputMessage}
+                  onChange={(e) => setInputMessage(e.target.value)}
+                  onKeyDown={handleKeyPress}
+                  autoSize={{ minRows: 1, maxRows: 8 }}
+                  variant="borderless"
+                  className="w-full bg-transparent text-zinc-100 text-[16px] px-0 py-0 resize-none leading-relaxed placeholder:text-zinc-500 focus:ring-0 custom-textarea-no-focus"
+                  style={{ minHeight: '24px' }}
+                />
+              </div>
+
+              {/* Right Actions: Mic & Send */}
+              <div className="flex items-center gap-2 mb-0.5 flex-shrink-0">
+                {!inputMessage.trim() ? (
+                  <button
+                    onClick={toggleRecording}
+                    className={`w-10 h-10 rounded-full flex items-center justify-center transition-all duration-200 ${
+                      isRecording 
+                        ? 'bg-[#E31837] text-white animate-pulse shadow-lg shadow-[#E31837]/30' 
+                        : 'text-zinc-400 hover:text-white hover:bg-[#333]'
+                    }`}
+                    title="Dictado por voz"
+                  >
+                    <Mic size={20} />
+                  </button>
+                ) : (
+                  <button
+                    onClick={handleSendMessage}
+                    disabled={isLoading}
+                    className="w-10 h-10 rounded-full bg-white text-black hover:bg-zinc-200 flex items-center justify-center transition-all duration-200 hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+                    title="Enviar mensaje"
+                  >
+                    <SendHorizontal size={20} className="ml-0.5" strokeWidth={2} />
+                  </button>
+                )}
+              </div>
+            </div>
+            
+            {/* Footer info */}
+            <div className="flex justify-between items-center mt-3 px-2">
+               <div className="flex items-center">
                   <Select
                     value={selectedModel}
                     onChange={setSelectedModel}
-                    suffixIcon={<DownOutlined style={{ color: "#888888", fontSize: "10px" }} />}
+                    suffixIcon={<ChevronDown className="text-zinc-500" size={12} />}
                     size="small"
                     variant="borderless"
-                    style={{ 
-                      width: "140px",
-                      color: "#888888",
-                    }}
+                    className="text-zinc-500 hover:text-zinc-300 transition-colors text-xs"
+                    classNames={{ popup: { root: "dark-select-dropdown" } }}
+                    styles={{ popup: { root: { background: '#1E1F20', border: '1px solid #333' } } }}
                     options={[
                       { label: "ChatGPT 4o-mini", value: "gpt-4o-mini" },
                       { label: "Velvet 12B", value: "velvet-12b" },
                     ]}
                   />
-                </div>
-
-                <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                  {/* Mostrar micrófono si no hay texto, enviar si hay texto */}
-                  {!inputMessage.trim() ? (
-                    <Button
-                      type="text"
-                      icon={<AudioOutlined style={{ fontSize: "18px" }} />}
-                      onClick={toggleRecording}
-                      style={{
-                        color: isRecording ? "#FFFFFF" : "#888888",
-                        background: isRecording ? "#E31837" : "#3A3A3D",
-                        width: "40px",
-                        height: "40px",
-                        borderRadius: "50%",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        animation: isRecording ? "pulse 1.5s infinite" : "none",
-                      }}
-                    />
-                  ) : (
-                    <Button
-                      type="text"
-                      icon={<SendOutlined style={{ fontSize: "16px" }} />}
-                      onClick={handleSendMessage}
-                      style={{
-                        color: "#FFFFFF",
-                        background: "#E31837",
-                        width: "40px",
-                        height: "40px",
-                        borderRadius: "50%",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                      }}
-                    />
-                  )}
-                </div>
-              </div>
+               </div>
+               <p className="text-[11px] text-zinc-600 text-center">
+                  TIVIT AI puede cometer errores.
+               </p>
             </div>
-
-            <Text
-              style={{
-                display: "block",
-                textAlign: "center",
-                color: "#666666",
-                fontSize: "12px",
-                marginTop: "12px",
-              }}
-            >
-              Velvet puede cometer errores, asi que verifica sus respuestas.
-            </Text>
           </div>
         </div>
       </div>
 
-      {/* Modal de propuesta (por implementar) */}
+      {/* Drawers & Modals */}
+      <Drawer
+        title={<span className="text-zinc-200">Documentos del Chat</span>}
+        placement="right"
+        onClose={() => setFilesDrawerOpen(false)}
+        open={filesDrawerOpen}
+        styles={{
+          header: { background: "#1E1F20", borderBottom: "1px solid rgba(255,255,255,0.05)" },
+          body: { background: "#131314" },
+          wrapper: { width: 350 },
+        }}
+        closeIcon={<X className="text-zinc-400 hover:text-white" />}
+      >
+        {isLoadingDocuments ? (
+          <div className="flex justify-center py-10"><Loader2 className="animate-spin text-zinc-500" /></div>
+        ) : (
+          <>
+            {renderFileSection("Archivos del Workspace", workspaceFiles)}
+            {renderFileSection("Archivos de esta conversación", chatFiles)}
+          </>
+        )}
+      </Drawer>
+
       <Modal
-        title={null}
         open={showProposalModal}
         onCancel={() => setShowProposalModal(false)}
         footer={null}
         centered
-        width={500}
-        styles={{
-          mask: { background: "rgba(0, 0, 0, 0.7)" },
-          header: { background: "#1E1E21", borderBottom: "1px solid #2A2A2D" },
-          body: { background: "#1E1E21", padding: "32px" },
-        }}
-        style={{ background: "#1E1E21", borderRadius: "16px", border: "1px solid #2A2A2D" }}
-        closeIcon={<span style={{ color: "#666666", fontSize: "18px" }}>×</span>}
+        width={400}
+        closeIcon={<X className="text-zinc-500" />}
+        styles={{ content: { background: '#1E1F20', padding: 32 } }}
       >
-        <div style={{ textAlign: "center" }}>
-          <div style={{ fontSize: "48px", marginBottom: "16px" }}>🚧</div>
-          <Text style={{ color: "#FFFFFF", fontSize: "20px", fontWeight: 600, display: "block", marginBottom: "12px" }}>
-            Función por implementar
-          </Text>
-          <Text style={{ color: "#888888", fontSize: "14px", display: "block", marginBottom: "24px" }}>
-            La descarga de propuestas estará disponible próximamente.
-            <br />
-            El backend aún no ha implementado esta funcionalidad.
-          </Text>
-          <Button
-            type="primary"
-            onClick={() => setShowProposalModal(false)}
-            style={{
-              background: "#E31837",
-              borderColor: "#E31837",
-              borderRadius: "8px",
-              height: "40px",
-              padding: "0 24px",
-            }}
-          >
-            Entendido
-          </Button>
+        <div className="text-center">
+          <div className="w-12 h-12 bg-zinc-800 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl">🚧</div>
+          <h3 className="text-white text-lg font-semibold mb-2">Próximamente</h3>
+          <p className="text-zinc-500 text-sm mb-6">Esta funcionalidad estará disponible en la próxima actualización.</p>
+          <Button type="primary" onClick={() => setShowProposalModal(false)} className="bg-[#E31837] border-none w-full">Entendido</Button>
         </div>
       </Modal>
 

@@ -10,6 +10,8 @@ __pycache__/
 .venv/
 venv/
 
+#Archivos
+/backend/uploaded_files/*
 #Instrucciones
 instructions.md
 claude.md

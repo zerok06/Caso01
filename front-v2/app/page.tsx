@@ -40,8 +40,16 @@ export default function Home() {
       {/* Main Content Area */}
       <main className="flex-1 flex flex-col h-full relative overflow-hidden">
         
-        {/* Top Right User Menu */}
-        <header className="absolute top-0 right-0 p-6 z-20 flex gap-4 items-center">
+        {/* Header with Logo and User Menu */}
+        <header className="absolute top-0 left-0 right-0 px-6 py-6 z-20 flex justify-between items-center">
+          <div className="cursor-pointer" onClick={() => router.push('/')}>
+            <img
+              src="/logo.svg"
+              alt="Logo"
+              className="h-10"
+            />
+          </div>
+          <div className="flex gap-4 items-center">
           <button 
             onClick={() => setShowTemplates(true)}
             className="flex items-center gap-2 px-4 py-2 bg-[#1E1F20] hover:bg-zinc-800 border border-zinc-800 rounded-xl text-sm font-medium transition-colors"
@@ -49,7 +57,8 @@ export default function Home() {
             <LayoutGrid size={16} className="text-[#E31837]" />
             Plantillas
           </button>
-          <UserMenu user={user} />
+            <UserMenu user={user} />
+          </div>
         </header>
 
         {/* Scrollable Container for Hero + Dashboard */}

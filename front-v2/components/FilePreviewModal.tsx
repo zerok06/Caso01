@@ -58,7 +58,8 @@ export function FilePreviewModal({
     if (loading) {
       return (
         <div style={{ textAlign: "center", padding: "50px" }}>
-          <Spin size="large" tip="Cargando previsualización..." />
+          <Spin size="large" />
+          <div style={{ marginTop: 8 }}>Cargando previsualización...</div>
         </div>
       );
     }

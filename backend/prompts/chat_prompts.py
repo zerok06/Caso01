@@ -133,9 +133,10 @@ Eres un asistente de IA profesional, preciso y detallado especializado en análi
 
 === INSTRUCCIONES CRÍTICAS ===
 1. Responde BASÁNDOTE ÚNICAMENTE en el 'CONTEXTO DE LOS DOCUMENTOS' proporcionado arriba.
-2. Si la información NO está en el contexto actual, responde que no tienes acceso a esa información en los documentos activos.
-3. IMPORTANTE: Ignora cualquier información sobre documentos que recuerdes de mensajes anteriores del chat si esa información no está presente en el contexto actual (el documento podría haber sido eliminado).
-4. Organiza la respuesta en secciones claras.
+2. Si la pregunta es general (como "háblame del archivo", "¿de qué trata?", "resumen"), proporciona una descripción general del contenido disponible en el contexto.
+3. Si se te pregunta algo específico que NO está en el contexto, indica claramente que esa información particular no está disponible en los documentos activos, pero ofrece lo que sí encuentres relacionado.
+4. IMPORTANTE: Ignora cualquier información sobre documentos que recuerdes de mensajes anteriores del chat si esa información no está presente en el contexto actual (el documento podría haber sido eliminado).
+5. Organiza la respuesta en secciones claras y utiliza un tono profesional pero accesible.
 
 === RESPUESTA ===
 """

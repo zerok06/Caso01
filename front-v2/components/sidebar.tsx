@@ -1508,7 +1508,7 @@ export default function Sidebar() {
       {/* Spacer for fixed sidebar */}
       <div style={{ width: collapsed ? 60 : 280, flexShrink: 0, transition: "width 0.2s" }} />
 
-      {/* Modal for new workspace */}
+      {/* Modal for new workspace - Redesigned */}
       <Modal
         title={null}
         open={isModalOpen}
@@ -1516,16 +1516,33 @@ export default function Sidebar() {
         footer={null}
         centered
         width={500}
-        styles={modalStyles}
-        closeIcon={<span style={{ color: "#666666", fontSize: "18px" }}>×</span>}
+        styles={{
+          content: {
+            background: "#1E1F20",
+            borderRadius: "24px",
+            padding: "32px",
+            border: "1px solid rgba(255, 255, 255, 0.08)",
+            boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.5)",
+            color: "white"
+          },
+          mask: {
+            backdropFilter: "blur(8px)",
+            background: "rgba(0, 0, 0, 0.8)"
+          }
+        }}
+        closeIcon={<span className="text-zinc-500 hover:text-white transition-colors text-xl">×</span>}
       >
-        <div style={{ marginBottom: "24px" }}>
-          <Text style={{ color: "#FFFFFF", fontSize: "20px", fontWeight: 600 }}>Crear Nuevo Workspace</Text>
+        <div className="mb-8">
+            <div className="w-12 h-12 rounded-2xl bg-[#E31837]/10 flex items-center justify-center mb-4 text-[#E31837]">
+                <PlusOutlined style={{ fontSize: '20px' }} />
+            </div>
+            <h2 className="text-2xl font-bold text-white mb-2 tracking-tight">Nuevo Espacio</h2>
+            <p className="text-zinc-400 text-sm">Crea un entorno dedicado para tus documentos y análisis.</p>
         </div>
 
         {/* Workspace Name */}
         <div style={{ marginBottom: "20px" }}>
-          <Text style={{ color: "#888888", fontSize: "14px", display: "block", marginBottom: "8px" }}>
+          <Text style={{ color: "#D4D4D8", fontSize: "14px", fontWeight: 500, display: "block", marginBottom: "8px", marginLeft: "4px" }}>
             Nombre del Workspace
           </Text>
           <Input
@@ -1533,19 +1550,23 @@ export default function Sidebar() {
             value={workspaceName}
             onChange={(e) => setWorkspaceName(e.target.value)}
             disabled={isUploading || documentStatus === "processing"}
+            className="hover:border-[#E31837] focus:border-[#E31837]"
             style={{
-              background: "#2A2A2D",
-              border: "1px solid #3A3A3D",
-              borderRadius: "8px",
+              background: "#131314",
+              border: "1px solid transparent",
+              borderRadius: "12px",
               padding: "12px 16px",
               color: "#FFFFFF",
-              fontSize: "14px",
+              fontSize: "16px",
+              height: "48px",
+              transition: "all 0.2s",
+              boxShadow: "inset 0 2px 4px 0 rgba(0, 0, 0, 0.2)"
             }}
           />
         </div>
 
         <div style={{ marginBottom: "20px" }}>
-          <Text style={{ color: "#888888", fontSize: "14px", display: "block", marginBottom: "8px" }}>Archivos</Text>
+          <Text style={{ color: "#D4D4D8", fontSize: "14px", fontWeight: 500, display: "block", marginBottom: "8px", marginLeft: "4px" }}>Archivos</Text>
           <Upload
             multiple
             fileList={fileList}
@@ -1555,17 +1576,20 @@ export default function Sidebar() {
           >
             <Button
               icon={<PlusOutlined />}
+              className="hover:border-[#E31837] hover:text-[#E31837]"
               style={{
-                background: "#2A2A2D",
-                border: "1px dashed #3A3A3D",
-                borderRadius: "8px",
-                color: "#888888",
+                background: "#131314",
+                border: "1px dashed #3F3F46",
+                borderRadius: "12px",
+                color: "#A1A1AA",
                 width: "100%",
                 height: "48px",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
                 gap: "8px",
+                fontSize: "14px",
+                transition: "all 0.2s"
               }}
             >
               Añadir archivos
@@ -1581,17 +1605,18 @@ export default function Sidebar() {
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "space-between",
-                    background: "#2A2A2D",
-                    padding: "8px 12px",
-                    borderRadius: "6px",
+                    background: "#131314",
+                    padding: "10px 16px",
+                    borderRadius: "10px",
+                    border: "1px solid rgba(255,255,255,0.05)"
                   }}
                 >
-                  <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                    <FileOutlined style={{ color: "#888888", fontSize: "14px" }} />
+                  <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+                    <FileOutlined style={{ color: "#A1A1AA", fontSize: "16px" }} />
                     <div>
-                      <Text style={{ color: "#E3E3E3", fontSize: "13px" }}>{file.name}</Text>
+                      <Text style={{ color: "#E4E4E7", fontSize: "14px" }}>{file.name}</Text>
                       {documentStatus === "processing" && (
-                        <div style={{ fontSize: "11px", color: "#faad14", marginTop: "2px" }}>
+                        <div style={{ fontSize: "11px", color: "#F59E0B", marginTop: "2px" }}>
                           ⏱ Procesando...
                         </div>
                       )}
@@ -1600,7 +1625,7 @@ export default function Sidebar() {
                   <DeleteOutlined
                     onClick={() => handleRemoveFile(file)}
                     style={{
-                      color: isUploading || documentStatus === "processing" ? "#444444" : "#666666",
+                      color: isUploading || documentStatus === "processing" ? "#52525B" : "#A1A1AA",
                       fontSize: "14px",
                       cursor: isUploading || documentStatus === "processing" ? "not-allowed" : "pointer"
                     }}
@@ -1612,8 +1637,8 @@ export default function Sidebar() {
         </div>
 
         {/* Additional Context */}
-        <div style={{ marginBottom: "24px" }}>
-          <Text style={{ color: "#888888", fontSize: "14px", display: "block", marginBottom: "8px" }}>
+        <div style={{ marginBottom: "32px" }}>
+          <Text style={{ color: "#D4D4D8", fontSize: "14px", fontWeight: 500, display: "block", marginBottom: "8px", marginLeft: "4px" }}>
             Contexto adicional para la IA
           </Text>
           <TextArea
@@ -1622,32 +1647,38 @@ export default function Sidebar() {
             onChange={(e) => setAdditionalContext(e.target.value)}
             disabled={isUploading || documentStatus === "processing"}
             rows={4}
+            className="hover:border-[#E31837] focus:border-[#E31837]"
             style={{
-              background: "#2A2A2D",
-              border: "1px solid #3A3A3D",
-              borderRadius: "8px",
+              background: "#131314",
+              border: "1px solid transparent",
+              borderRadius: "12px",
               padding: "12px 16px",
               color: "#FFFFFF",
               fontSize: "14px",
               resize: "none",
+              transition: "all 0.2s",
+              boxShadow: "inset 0 2px 4px 0 rgba(0, 0, 0, 0.2)"
             }}
           />
         </div>
 
         {/* Action Buttons */}
-        <div style={{ display: "flex", gap: "12px", justifyContent: "flex-end" }}>
+        <div style={{ display: "flex", gap: "12px", justifyContent: "flex-end", paddingTop: "16px", borderTop: "1px solid rgba(255,255,255,0.05)" }}>
           <Button
             onClick={handleCloseModal}
             disabled={isUploading || documentStatus === "processing"}
             style={{
               background: "transparent",
-              border: "1px solid #3A3A3D",
-              borderRadius: "8px",
-              color: isUploading || documentStatus === "processing" ? "#666666" : "#888888",
-              padding: "8px 20px",
-              height: "auto",
+              border: "1px solid transparent",
+              borderRadius: "12px",
+              color: "#A1A1AA",
+              padding: "8px 24px",
+              height: "44px",
+              fontSize: "14px",
+              fontWeight: 500,
               cursor: isUploading || documentStatus === "processing" ? "not-allowed" : "pointer",
             }}
+            className="hover:text-white hover:bg-white/5"
           >
             Cancelar
           </Button>
@@ -1656,19 +1687,23 @@ export default function Sidebar() {
             disabled={!workspaceName.trim() || isUploading || documentStatus === "processing"}
             loading={isUploading || documentStatus === "processing"}
             style={{
-              background: workspaceName.trim() && !isUploading && documentStatus !== "processing" ? "#E53935" : "#3A3A3D",
+              background: workspaceName.trim() && !isUploading && documentStatus !== "processing" ? "#E31837" : "#27272A",
               border: "none",
-              borderRadius: "8px",
-              color: workspaceName.trim() && !isUploading && documentStatus !== "processing" ? "#FFFFFF" : "#666666",
-              padding: "8px 20px",
-              height: "auto",
+              borderRadius: "12px",
+              color: workspaceName.trim() && !isUploading && documentStatus !== "processing" ? "#FFFFFF" : "#71717A",
+              padding: "8px 32px",
+              height: "44px",
+              fontSize: "14px",
+              fontWeight: 600,
+              boxShadow: workspaceName.trim() && !isUploading && documentStatus !== "processing" ? "0 4px 12px rgba(227, 24, 55, 0.3)" : "none",
             }}
+            className={workspaceName.trim() && !isUploading && documentStatus !== "processing" ? "hover:bg-[#c41530]" : ""}
           >
             {documentStatus === "processing"
               ? "Procesando documentos..."
               : isUploading
                 ? "Subiendo archivos..."
-                : "Crear Workspace"}
+                : "Crear Espacio"}
           </Button>
         </div>
       </Modal>

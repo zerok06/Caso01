@@ -196,6 +196,16 @@ textarea.ant-input:hover {
   scrollbar-color: #3A3A3D transparent;
 }
 
+/* Hide scrollbar utility */
+.scrollbar-hide {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;  /* Chrome, Safari and Opera */
+}
+
 /* Chat area specific scrollbar - more subtle */
 .chat-scrollbar::-webkit-scrollbar {
   width: 6px;

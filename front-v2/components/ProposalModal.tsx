@@ -261,7 +261,10 @@ export function ProposalModal({
             )}
           </div>
         ) : (
-          <Spin tip="Cargando análisis..." />
+          <div style={{ textAlign: "center", padding: "50px" }}>
+            <Spin />
+            <div style={{ marginTop: 8 }}>Cargando análisis...</div>
+          </div>
         );
 
       case 2:

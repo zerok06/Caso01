@@ -17,6 +17,7 @@ import {
 } from '@ant-design/icons'
 import { TrendingUp, FileCheck, Calendar, Target } from 'lucide-react'
 import { DashboardService, type DashboardStats as DashboardStatsData } from '@/lib/dashboardService'
+import { useLocalStorage } from '@/hooks/useLocalStorage'
 import dayjs from 'dayjs'
 
 interface DashboardStatsProps {
@@ -188,24 +189,16 @@ export function DashboardStats({
 }
 
 export function TodoList() {
-  const [todos, setTodos] = useState<Array<{ id: number; text: string; completed: boolean }>>([])
+  const [todos, setTodos] = useLocalStorage<Array<{ id: number; text: string; completed: boolean }>>(
+    'dashboard_todos',
+    []
+  )
   const [newTodo, setNewTodo] = useState('')
   const [isAdding, setIsAdding] = useState(false)
 
-  useEffect(() => {
-    const savedTodos = localStorage.getItem('userTodos')
-    if (savedTodos) {
-      try { setTodos(JSON.parse(savedTodos)) } catch (e) { console.error(e) }
-    }
-  }, [])
-
-  useEffect(() => {
-    localStorage.setItem('userTodos', JSON.stringify(todos))
-  }, [todos])
-
   const addTodo = () => {
     if (newTodo.trim()) {
-      setTodos([...todos, { id: Date.now(), text: newTodo, completed: false }])
+      setTodos([...todos, { id: Date.now(), text: newTodo.trim(), completed: false }])
       setNewTodo('')
       setIsAdding(false)
     }
@@ -327,27 +320,25 @@ export function ComplianceScore({ score = 0 }: { score?: number }) {
 }
 
 export function UpcomingDeadlines() {
-  const [deadlines, setDeadlines] = useState<Array<{
+  const [deadlines, setDeadlines] = useLocalStorage<Array<{
     id: number; title: string; date: string; time?: string; type: 'entrega' | 'reunion'
-  }>>([])
+  }>>(
+    'dashboard_deadlines',
+    []
+  )
   const [isAdding, setIsAdding] = useState(false)
   const [newDeadline, setNewDeadline] = useState({ title: '', date: '', time: '', type: 'entrega' as 'entrega' | 'reunion' })
 
-  useEffect(() => {
-    const saved = localStorage.getItem('userDeadlines')
-    if (saved) { try { setDeadlines(JSON.parse(saved)) } catch (e) { console.error(e) } }
-  }, [])
-
-  useEffect(() => {
-    localStorage.setItem('userDeadlines', JSON.stringify(deadlines))
-  }, [deadlines])
-
   const addDeadline = () => {
     if (newDeadline.title.trim() && newDeadline.date) {
-      setDeadlines([...deadlines, { ...newDeadline, id: Date.now() }])
+      setDeadlines([...deadlines, { ...newDeadline, title: newDeadline.title.trim(), id: Date.now() }])
       setNewDeadline({ title: '', date: '', time: '', type: 'entrega' })
       setIsAdding(false)
     }
+  }
+
+  const deleteDeadline = (id: number) => {
+    setDeadlines(deadlines.filter(dl => dl.id !== id))
   }
 
   return (
@@ -391,12 +382,22 @@ export function UpcomingDeadlines() {
           <div className="text-center py-10 text-zinc-500 text-sm italic">Sin fechas límite</div>
         ) : (
           deadlines.map((dl) => (
-            <div key={dl.id} className="p-3 bg-zinc-900 rounded-xl border border-transparent hover:border-zinc-700 transition-all">
+            <div key={dl.id} className="group p-3 bg-zinc-900 rounded-xl border border-transparent hover:border-zinc-700 transition-all">
               <div className="flex justify-between items-start mb-1">
-                <span className="text-sm font-bold text-zinc-200">{dl.title}</span>
-                <Tag color={dl.type === 'entrega' ? 'blue' : 'purple'} className="m-0 text-[10px] rounded-md border-none">
-                  {dl.type.toUpperCase()}
-                </Tag>
+                <span className="text-sm font-bold text-zinc-200 flex-1">{dl.title}</span>
+                <div className="flex items-center gap-2">
+                  <Tag color={dl.type === 'entrega' ? 'blue' : 'purple'} className="m-0 text-[10px] rounded-md border-none">
+                    {dl.type.toUpperCase()}
+                  </Tag>
+                  <Button
+                    type="text"
+                    danger
+                    size="small"
+                    icon={<DeleteOutlined className="text-xs" />}
+                    onClick={() => deleteDeadline(dl.id)}
+                    className="opacity-0 group-hover:opacity-100 transition-opacity"
+                  />
+                </div>
               </div>
               <p className="text-xs text-zinc-500">
                 {dayjs(dl.date).format('DD MMM YYYY')} {dl.time && `• ${dl.time}`}

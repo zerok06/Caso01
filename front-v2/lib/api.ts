@@ -203,12 +203,18 @@ api.interceptors.response.use(
         console.error("Forbidden (403): No tienes permisos para realizar esta acción");
       }
 
-      // Handle other errors
-      console.error(
-        "Error de respuesta:",
-        status,
-        error.response.data,
-      );
+      // Handle 404 Not Found (silently for expected cases like new conversations)
+      if (status === 404) {
+        // Don't log 404 errors as they are expected for new conversations/resources
+        // The calling code should handle these appropriately
+      } else {
+        // Handle other errors
+        console.error(
+          "Error de respuesta:",
+          status,
+          error.response.data,
+        );
+      }
     } else if (error.request) {
       console.error("Error de red:", error.message);
     } else {

@@ -37,7 +37,7 @@ import {
 // MAIN API CLIENT (original apiClient)
 // ============================================
 const baseURL =
-  process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8000/api/v1";
+  process.env.NEXT_PUBLIC_API_BASE_URL || "/api/v1";
 
 export const api: AxiosInstance = axios.create({
   baseURL,

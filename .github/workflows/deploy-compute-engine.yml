@@ -19,7 +19,7 @@ jobs:
         with:
           host: ${{ secrets.GCE_INSTANCE_IP }}
           username: ${{ secrets.GCE_SSH_USER }}
-          key: ${{ secrets.GCE_SSH_KEY }}
+          password: ${{ secrets.GCE_SSH_PASSWORD }}
           script: |
             # 1. Configuración Inicial (Solo la primera vez o si cambia)
             # Instalar Docker si no existe

@@ -3,6 +3,14 @@
 import { useCopilotAction, useCopilotReadable, useCopilotChat } from "@copilotkit/react-core";
 import { useState, useCallback } from "react";
 import { message } from "antd";
+import {
+  GenerativeTable,
+  GenerativeBarChart,
+  GenerativeLineChart,
+  GenerativePieChart,
+  GenerativeMetrics,
+  GenerativeTimeline,
+} from "@/components/copilot/GenerativeUI";
 
 interface UseCopilotChatProps {
   workspaceId: string;
@@ -31,7 +39,7 @@ export function useCopilotChatActions({
 
   // Exponer contexto del workspace a CopilotKit
   useCopilotReadable({
-    description: "Contexto del documento del workspace actual para consultas y generación",
+    description: "Contexto del documento del workspace actual para consultas y generación de visualizaciones",
     value: documentContext || "No hay documento cargado en el workspace",
   });
 
@@ -41,79 +49,275 @@ export function useCopilotChatActions({
   });
 
   // ═══════════════════════════════════════════════════════════════
-  // ACCIONES PARA CONSULTAS DE DATOS
+  // ACCIONES CON GENERATIVE UI (Render directo en el chat)
   // ═══════════════════════════════════════════════════════════════
 
-  // Acción: Generar tabla de datos
+  // Acción: Renderizar tabla de datos en el chat
   useCopilotAction({
-    name: "generateDataTable",
-    description: "Genera una tabla de datos estructurada a partir del documento (requisitos, plazos, costos, etc.)",
+    name: "renderTable",
+    description: "Renderiza una tabla de datos directamente en el chat. Úsalo cuando el usuario pida ver datos en formato tabla, lista de requisitos, tecnologías, equipo, plazos, etc. SIEMPRE usa datos reales extraídos del contexto del documento.",
     parameters: [
       {
-        name: "dataType",
+        name: "title",
         type: "string",
-        description: "Tipo de datos: requisitos, plazos, tecnologias, costos, equipo, riesgos",
+        description: "Título descriptivo de la tabla",
+        required: true,
+      },
+      {
+        name: "data",
+        type: "object[]",
+        description: "Array de objetos con los datos. Extrae estos datos del contexto del documento RFP.",
         required: true,
       },
       {
         name: "columns",
-        type: "string[]",
-        description: "Columnas a incluir en la tabla",
+        type: "object[]",
+        description: "Definición de columnas: [{key: 'campo', title: 'Título Columna'}]",
         required: false,
       },
       {
-        name: "filters",
-        type: "object",
-        description: "Filtros a aplicar",
+        name: "summary",
+        type: "string",
+        description: "Breve resumen o análisis de los datos mostrados",
         required: false,
       },
     ],
-    handler: async ({ dataType, columns, filters }) => {
-      setIsGenerating(true);
-      
-      try {
-        const token = localStorage.getItem('access_token');
-        const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8000/api/v1"
-        
-        // Llamar al endpoint de análisis con el tipo específico
-        const response = await fetch(`${apiBaseUrl}/workspaces/${workspaceId}/extract-data`, {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            data_type: dataType,
-            columns,
-            filters,
-          }),
-        });
-
-        if (!response.ok) throw new Error('Error al extraer datos');
-        
-        const data = await response.json();
-        
-        const tableData: DataQuery = {
-          type: 'table',
-          title: `Tabla de ${dataType}`,
-          data: data.rows || [],
-          columns: data.columns || columns,
-        };
-        
-        setGeneratedData(prev => [...prev, tableData]);
-        onDataGenerated?.(tableData, 'table');
-        
-        return `✅ Tabla generada con ${data.rows?.length || 0} filas. Los datos están disponibles en la interfaz.`;
-      } catch (error) {
-        console.error('Error generating table:', error);
-        return `❌ Error al generar tabla: ${error}`;
-      } finally {
-        setIsGenerating(false);
+    render: ({ args, status }) => {
+      if (status === "complete" && args?.data) {
+        return (
+          <GenerativeTable
+            title={args.title as string || "Datos"}
+            data={args.data as any[]}
+            columns={args.columns as any[]}
+            summary={args.summary as string}
+          />
+        );
       }
+      return <div className="text-zinc-400 text-sm animate-pulse">📊 Generando tabla...</div>;
     },
   });
 
-  // Acción: Generar matriz de requisitos
+  // Acción: Renderizar gráfico de barras
+  useCopilotAction({
+    name: "renderBarChart",
+    description: "Renderiza un gráfico de barras para comparar valores. Ideal para: costos por fase, distribución de recursos, comparativas de precios, cantidades por categoría.",
+    parameters: [
+      {
+        name: "title",
+        type: "string",
+        description: "Título del gráfico",
+        required: true,
+      },
+      {
+        name: "data",
+        type: "object[]",
+        description: "Array de datos. Ejemplo: [{categoria: 'Fase 1', costo: 5000, horas: 100}]",
+        required: true,
+      },
+      {
+        name: "xKey",
+        type: "string",
+        description: "Nombre del campo para el eje X (categorías)",
+        required: true,
+      },
+      {
+        name: "yKeys",
+        type: "string[]",
+        description: "Array de campos numéricos para el eje Y",
+        required: true,
+      },
+      {
+        name: "summary",
+        type: "string",
+        description: "Análisis o interpretación del gráfico",
+        required: false,
+      },
+    ],
+    render: ({ args, status }) => {
+      if (status === "complete" && args?.data) {
+        return (
+          <GenerativeBarChart
+            title={args.title as string || "Gráfico"}
+            data={args.data as any[]}
+            xKey={args.xKey as string}
+            yKeys={args.yKeys as string[]}
+            summary={args.summary as string}
+          />
+        );
+      }
+      return <div className="text-zinc-400 text-sm animate-pulse">📊 Generando gráfico de barras...</div>;
+    },
+  });
+
+  // Acción: Renderizar gráfico de líneas/tendencias
+  useCopilotAction({
+    name: "renderLineChart",
+    description: "Renderiza un gráfico de líneas/área para mostrar tendencias. Ideal para: cronograma de costos mensuales, evolución del proyecto, proyecciones en el tiempo.",
+    parameters: [
+      {
+        name: "title",
+        type: "string",
+        description: "Título del gráfico",
+        required: true,
+      },
+      {
+        name: "data",
+        type: "object[]",
+        description: "Array con datos temporales. Ejemplo: [{mes: 'Enero', costo: 10000}]",
+        required: true,
+      },
+      {
+        name: "xKey",
+        type: "string",
+        description: "Campo para el eje X (tiempo/periodo)",
+        required: true,
+      },
+      {
+        name: "yKeys",
+        type: "string[]",
+        description: "Campos para el eje Y (valores numéricos)",
+        required: true,
+      },
+      {
+        name: "summary",
+        type: "string",
+        description: "Análisis de la tendencia mostrada",
+        required: false,
+      },
+    ],
+    render: ({ args, status }) => {
+      if (status === "complete" && args?.data) {
+        return (
+          <GenerativeLineChart
+            title={args.title as string || "Tendencias"}
+            data={args.data as any[]}
+            xKey={args.xKey as string}
+            yKeys={args.yKeys as string[]}
+            summary={args.summary as string}
+          />
+        );
+      }
+      return <div className="text-zinc-400 text-sm animate-pulse">📈 Generando gráfico de tendencias...</div>;
+    },
+  });
+
+  // Acción: Renderizar gráfico circular (pie)
+  useCopilotAction({
+    name: "renderPieChart",
+    description: "Renderiza un gráfico circular para distribuciones y proporciones. Ideal para: distribución de costos, composición del equipo, tipos de requisitos, porcentajes.",
+    parameters: [
+      {
+        name: "title",
+        type: "string",
+        description: "Título del gráfico",
+        required: true,
+      },
+      {
+        name: "data",
+        type: "object[]",
+        description: "Array con {name: 'categoría', value: número}",
+        required: true,
+      },
+      {
+        name: "summary",
+        type: "string",
+        description: "Análisis de la distribución",
+        required: false,
+      },
+    ],
+    render: ({ args, status }) => {
+      if (status === "complete" && args?.data) {
+        return (
+          <GenerativePieChart
+            title={args.title as string || "Distribución"}
+            data={args.data as any[]}
+            summary={args.summary as string}
+          />
+        );
+      }
+      return <div className="text-zinc-400 text-sm animate-pulse">🥧 Generando gráfico circular...</div>;
+    },
+  });
+
+  // Acción: Mostrar métricas/KPIs
+  useCopilotAction({
+    name: "renderMetrics",
+    description: "Muestra tarjetas con métricas y KPIs importantes. Ideal para: resúmenes ejecutivos, indicadores clave del RFP, totales, estadísticas principales.",
+    parameters: [
+      {
+        name: "title",
+        type: "string",
+        description: "Título de la sección",
+        required: true,
+      },
+      {
+        name: "metrics",
+        type: "object[]",
+        description: "Array de métricas: [{label: 'nombre', value: 'valor', prefix?: '$', icon?: 'money'|'calendar'}]",
+        required: true,
+      },
+      {
+        name: "summary",
+        type: "string",
+        description: "Contexto o explicación",
+        required: false,
+      },
+    ],
+    render: ({ args, status }) => {
+      if (status === "complete" && args?.metrics) {
+        return (
+          <GenerativeMetrics
+            title={args.title as string || "Métricas"}
+            metrics={args.metrics as any[]}
+            summary={args.summary as string}
+          />
+        );
+      }
+      return <div className="text-zinc-400 text-sm animate-pulse">📋 Generando métricas...</div>;
+    },
+  });
+
+  // Acción: Mostrar timeline de plazos
+  useCopilotAction({
+    name: "renderTimeline",
+    description: "Muestra una línea de tiempo con fechas y eventos. Ideal para: cronograma del RFP, fechas límite, hitos del proyecto, plazos de entrega.",
+    parameters: [
+      {
+        name: "title",
+        type: "string",
+        description: "Título del timeline",
+        required: true,
+      },
+      {
+        name: "events",
+        type: "object[]",
+        description: "Array de eventos: [{date: 'fecha', event: 'descripción', type?: 'deadline'|'milestone'|'start'}]",
+        required: true,
+      },
+      {
+        name: "summary",
+        type: "string",
+        description: "Análisis del cronograma",
+        required: false,
+      },
+    ],
+    render: ({ args, status }) => {
+      if (status === "complete" && args?.events) {
+        return (
+          <GenerativeTimeline
+            title={args.title as string || "Cronograma"}
+            events={args.events as any[]}
+            summary={args.summary as string}
+          />
+        );
+      }
+      return <div className="text-zinc-400 text-sm animate-pulse">📅 Generando timeline...</div>;
+    },
+  });
+
+  // ═══════════════════════════════════════════════════════════════
+  // ACCIONES PARA CONSULTAS DE DATOS (Backend)
+  // ═══════════════════════════════════════════════════════════════
   useCopilotAction({
     name: "generateRequirementsMatrix",
     description: "Genera una matriz de requisitos funcionales y no funcionales del RFP",

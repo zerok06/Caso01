@@ -36,7 +36,12 @@ import { useWorkspaceContext } from "@/context/WorkspaceContext"
 import { fetchConversationMessages, fetchConversationDocuments, fetchWorkspaceDocuments, deleteDocumentApi, downloadProposalFromMarkdown } from "@/lib/api"
 import { FilePreviewModal } from "@/components/FilePreviewModal"
 import type { DocumentPublic, DocumentChunk } from "@/types/api"
-import { cn } from "@/lib/utils" // Assuming this utility exists, otherwise I'll handle it
+import { cn } from "@/lib/utils"
+import { 
+  parseVisualizationsFromMarkdown, 
+  VisualizationsContainer,
+  type VisualizationData 
+} from "@/components/chat/VisualizationRenderer"
 
 const { TextArea } = Input
 
@@ -70,6 +75,19 @@ const MessageItem = memo<MessageItemProps>(({
   markdownComponents
 }) => {
   const isUser = message.role === "user"
+  
+  // Parsear visualizaciones del contenido del asistente (solo si no es mensaje de usuario)
+  const parsedContent = useMemo(() => {
+    if (isUser || !message.content) {
+      return { textContent: message.content, visualizations: [] };
+    }
+    try {
+      return parseVisualizationsFromMarkdown(message.content);
+    } catch (e) {
+      console.error("Error parsing visualizations:", e);
+      return { textContent: message.content, visualizations: [] };
+    }
+  }, [message.content, isUser]);
 
   return (
     <div
@@ -95,24 +113,32 @@ const MessageItem = memo<MessageItemProps>(({
         </div>
 
         {/* Content */}
-        <div className="flex flex-col min-w-0">
+        <div className="flex flex-col min-w-0 flex-1">
           <div className={cn(
             "relative rounded-2xl px-5 py-3.5 text-[15px] leading-relaxed",
             isUser 
               ? "bg-[#2A2A2D] text-zinc-100 border border-white/5 rounded-tr-sm" 
-              : "text-zinc-200 pl-0 pt-1" // AI messages are cleaner, no bubble background usually (or subtle)
+              : "text-zinc-200 pl-0 pt-1"
           )}>
             {isUser ? (
                <p className="whitespace-pre-wrap m-0">{message.content}</p>
             ) : (
-              <div className="markdown-content prose prose-invert max-w-none prose-p:leading-relaxed prose-pre:bg-[#1E1E21] prose-pre:border prose-pre:border-white/5 prose-pre:rounded-xl">
-                <ReactMarkdown
-                  remarkPlugins={remarkPlugins}
-                  components={markdownComponents}
-                >
-                  {message.content}
-                </ReactMarkdown>
-              </div>
+              <>
+                {/* Texto Markdown */}
+                <div className="markdown-content prose prose-invert max-w-none prose-p:leading-relaxed prose-pre:bg-[#1E1E21] prose-pre:border prose-pre:border-white/5 prose-pre:rounded-xl">
+                  <ReactMarkdown
+                    remarkPlugins={remarkPlugins}
+                    components={markdownComponents}
+                  >
+                    {parsedContent.textContent || message.content}
+                  </ReactMarkdown>
+                </div>
+                
+                {/* Visualizaciones Generative UI */}
+                {parsedContent.visualizations && parsedContent.visualizations.length > 0 && (
+                  <VisualizationsContainer visualizations={parsedContent.visualizations} />
+                )}
+              </>
             )}
           </div>
           

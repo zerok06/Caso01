@@ -9,6 +9,8 @@ const nextConfig = {
     unoptimized: false,
   },
   
+  serverExternalPackages: ['shiki'],
+
   // Optimización de bundle - tree-shaking para Ant Design e íconos
   transpilePackages: ['antd', '@ant-design/icons'],
   experimental: {

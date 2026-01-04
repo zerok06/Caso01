@@ -25,7 +25,7 @@ _cache = None
 
 def initialize_providers():
     """
-    Inicializa providers: Gemini Flash (prioridad), OpenAI (fallback).
+    Inicializa providers: OpenAI (prioridad), Gemini (deshabilitado temporalmente).
     """
     global _providers, _router, _cache
     
@@ -36,21 +36,7 @@ def initialize_providers():
     if _cache:
         logger.info("✅ Sistema de caché LLM inicializado")
     
-    # 1. Gemini Flash (prioridad #1)
-    try:
-        from core.gcp_service import gcp_service
-        if gcp_service.gemini_available:
-            from core.providers.gemini_flash_provider import GeminiFlashProvider
-            _providers["gemini_flash"] = GeminiFlashProvider()
-            _providers["gemini"] = _providers["gemini_flash"]  # Alias
-            _providers["gpt4o_mini"] = _providers["gemini_flash"]  # Default alias
-            logger.info("✅ Gemini Flash provider inicializado")
-    except Exception as e:
-        logger.warning(f"⚠️ No se pudo inicializar Gemini: {e}")
-        import traceback
-        traceback.print_exc()
-    
-    # 2. OpenAI (fallback)
+    # 1. OpenAI (prioridad actual)
     if hasattr(settings, 'OPENAI_API_KEY') and settings.OPENAI_API_KEY:
         try:
             _providers["openai_gpt4o_mini"] = OpenAIProvider(
@@ -61,13 +47,23 @@ def initialize_providers():
                 api_key=settings.OPENAI_API_KEY,
                 model_name="gpt-4"
             )
-            # Solo usar OpenAI como default si Gemini no está disponible
-            if "gpt4o_mini" not in _providers:
-                _providers["gpt4o_mini"] = _providers["openai_gpt4o_mini"]
-                _providers["gpt4"] = _providers["openai_gpt4"]
-            logger.info("✅ OpenAI providers inicializados")
+            # Usar OpenAI como default
+            _providers["gpt4o_mini"] = _providers["openai_gpt4o_mini"]
+            _providers["gpt4"] = _providers["openai_gpt4"]
+            logger.info("✅ OpenAI providers inicializados (PRINCIPAL)")
         except Exception as e:
             logger.error(f"❌ Error OpenAI: {e}")
+    
+    # 2. Gemini Flash (deshabilitado temporalmente - descomentar para producción)
+    # try:
+    #     from core.gcp_service import gcp_service
+    #     if gcp_service.gemini_available:
+    #         from core.providers.gemini_flash_provider import GeminiFlashProvider
+    #         _providers["gemini_flash"] = GeminiFlashProvider()
+    #         _providers["gemini"] = _providers["gemini_flash"]
+    #         logger.info("✅ Gemini Flash provider inicializado")
+    # except Exception as e:
+    #     logger.warning(f"⚠️ No se pudo inicializar Gemini: {e}")
 
     # Inicializar router
     _router = LLMRouter()
@@ -82,7 +78,7 @@ def initialize_providers():
 def get_provider(model_name: str = None, task_type: str = None) -> LLMProvider:
     """
     Obtiene el provider apropiado.
-    Prioridad: Gemini Flash > GPT-4o-mini
+    Prioridad: OpenAI GPT-4o-mini (Gemini deshabilitado temporalmente)
     
     Args:
         model_name: Nombre específico del modelo (opcional)
@@ -99,25 +95,25 @@ def get_provider(model_name: str = None, task_type: str = None) -> LLMProvider:
         logger.info(f"🎯 Usando modelo solicitado: {model_name}")
         return _providers[model_name]
     
-    # 2. Priorizar Gemini Flash
+    # 2. Usar OpenAI GPT-4o-mini (Gemini deshabilitado temporalmente)
+    if "openai_gpt4o_mini" in _providers:
+        logger.info("🎯 Usando OpenAI GPT-4o-mini")
+        return _providers["openai_gpt4o_mini"]
+    
+    # 3. Fallback a Gemini si OpenAI no está disponible
     if "gemini_flash" in _providers:
+        logger.info("🎯 Fallback a Gemini Flash")
         return _providers["gemini_flash"]
     
-    # 3. Fallback a GPT-4o-mini
-    return _providers.get("gpt4o_mini")
-    
-    # 3. Fallback si el preferido no está disponible
-    if not provider and _providers:
+    # 4. Último fallback - cualquier provider disponible
+    if _providers:
         provider = next(iter(_providers.values()))
         logger.warning(f"⚠️ Usando fallback provider: {provider.model_name if hasattr(provider, 'model_name') else 'unknown'}")
-
+        return provider
     
-    if not provider:
-        error_msg = "No LLM provider available. Please check your OPENAI_API_KEY in .env or token.txt"
-        logger.error(f"❌ {error_msg}")
-        raise RuntimeError(error_msg)
-        
-    return provider
+    error_msg = "No LLM provider available. Please check your OPENAI_API_KEY in .env"
+    logger.error(f"❌ {error_msg}")
+    raise RuntimeError(error_msg)
 
 
 def generate_response(query: str, context_chunks: List[DocumentChunk], model_override: str = None, chat_history: List[dict] = None, use_cache: bool = True) -> str:

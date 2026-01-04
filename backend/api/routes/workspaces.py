@@ -1,6 +1,7 @@
 import csv
 import io
 import json
+import logging
 import os
 import pickle
 import shutil
@@ -9,6 +10,9 @@ from datetime import datetime
 from functools import lru_cache
 from pathlib import Path
 from typing import List, Optional
+
+# Configurar logger
+logger = logging.getLogger(__name__)
 
 # Cache y eficiencia
 import redis
@@ -1157,6 +1161,7 @@ async def chat_with_workspace(
         )
 
         full_response_text = ""
+        response_stream = None
         
         if intent == "GENERATE_PROPOSAL":
             # Marcar conversación como que tiene propuesta
@@ -1205,11 +1210,18 @@ async def chat_with_workspace(
             )
 
         try:
+            # Streaming token por token
+            logger.info("🔄 Iniciando streaming LLM...")
             for token in response_stream:
                 full_response_text += token
                 yield json.dumps({"type": "content", "text": token}) + "\n"
+            
+            logger.info(f"✅ Streaming completado: {len(full_response_text)} caracteres")
 
         except Exception as e:
+            logger.error(f"❌ Error en streaming: {str(e)}")
+            import traceback
+            traceback.print_exc()
             yield json.dumps({"type": "error", "detail": str(e)}) + "\n"
             return
 

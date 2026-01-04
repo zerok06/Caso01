@@ -16,16 +16,16 @@ export function CopilotProvider({ children }: CopilotProviderProps) {
     return <>{children}</>;
   }
 
-  // Usar el endpoint directo del Backend (Python/FastAPI)
-  const runtimeUrl = process.env.NEXT_PUBLIC_API_BASE_URL 
-    ? `${process.env.NEXT_PUBLIC_API_BASE_URL}/copilot`
-    : "http://localhost:8000/api/v1/copilot";
+  // Usar el API Route interno de Next.js que maneja el runtime de CopilotKit
+  // Esto evita problemas de CORS y red entre contenedores Docker
+  const runtimeUrl = "/api/copilotkit";
+
+  console.log("CopilotProvider initialized with runtimeUrl:", runtimeUrl);
 
   return (
     <CopilotKit 
       runtimeUrl={runtimeUrl}
       showDevConsole={process.env.NODE_ENV === "development"}
-      agent="default"
     >
       {children}
     </CopilotKit>

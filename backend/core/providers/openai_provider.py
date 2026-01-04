@@ -39,7 +39,7 @@ class OpenAIProvider(LLMProvider):
         
         self.client = OpenAI(
             api_key=api_key,
-            timeout=30.0  # Timeout de 30 segundos
+            timeout=120.0  # Timeout de 120 segundos para respuestas largas
         )
         self.model_name = model_name
         
@@ -179,7 +179,7 @@ class OpenAIProvider(LLMProvider):
                 temperature=0.7,
                 max_tokens=8000,
                 stream=True,
-                timeout=30.0
+                timeout=120.0
             )
             
             total_tokens = 0

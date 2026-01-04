@@ -33,11 +33,12 @@ logger = logging.getLogger(__name__)
 limiter = Limiter(key_func=get_remote_address)
 
 # --- Definir orígenes permitidos (CORS) ---
-raw_origins = os.getenv(
-    "CORS_ALLOWED_ORIGINS",
-    "http://localhost:3000,http://127.0.0.1:3000,http://0.0.0.0:3000,http://localhost:3000/*",
-)
-origins = [origin.strip() for origin in raw_origins.split(",") if origin.strip()]
+# raw_origins = os.getenv(
+#     "CORS_ALLOWED_ORIGINS",
+#     "http://localhost:3000,http://127.0.0.1:3000,http://0.0.0.0:3000,http://localhost:3000/*",
+# )
+# origins = [origin.strip() for origin in raw_origins.split(",") if origin.strip()]
+origins = ["*"]  # DEBUG: Allow all origins
 
 # NOTA: create_tables_with_retry() comentado porque usamos Alembic para migraciones
 # Si no usas Alembic, descomenta esta función para crear tablas automáticamente

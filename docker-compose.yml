@@ -46,7 +46,6 @@ services:
     build:
       context: ./front-v2
       dockerfile: Dockerfile.dev
-      target: deps 
     container_name: ia_frontend_v2
     restart: always
     ports:
@@ -60,7 +59,7 @@ services:
       - ./front-v2:/app           
       - /app/node_modules         
       - /app/.next                
-    command: pnpm run dev         
+    command: pnpm run dev --turbo         
     depends_on:
       - backend
 

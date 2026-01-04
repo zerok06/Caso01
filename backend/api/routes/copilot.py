@@ -124,9 +124,15 @@ async def copilot_chat(request: Request):
 
 @router.get("/info")
 async def copilot_info():
-    """Endpoint de información (Health check para CopilotKit)"""
+    """
+    Endpoint de información para CopilotKit.
+    Devuelve la lista de agentes disponibles según el protocolo de CopilotKit.
+    """
     return {
-        "status": "active",
-        "provider": "python-fastapi",
-        "capabilities": ["chat", "rag", "actions"]
+        "agents": [
+            {
+                "name": "default",
+                "description": "Asistente de análisis de RFPs de TIVIT"
+            }
+        ]
     }
